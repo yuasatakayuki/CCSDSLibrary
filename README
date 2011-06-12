@@ -1,0 +1,27 @@
+The open-source CCSDS Library
+
+==Overview==
+This library provides a set of C++ classes for generating/interpreting
+data packets formatted according to the Consultative Committee for 
+Space Data Systems (CCSDS) SpacePacket specifications.
+For details of the CCSDS SpacePacket, please refer a pdf document available
+from the url below:
+http://public.ccsds.org/
+
+
+==Install==
+Download the archive or checkout the git repository, and place the "CCSDSLibrary"
+folder anywhere you want. The library consists of header files, and therefore,
+no build procedure is required.
+
+When using this library from your application, please add
+#include "CCSDS.hh"
+and, add the path of the "CCSDSLibrary/includes" to the include path of
+your compiler. For example, if you installed the library to
+/usr/local/CCSDSLibrary, and the g++ compiler is used, do like below when
+compiling:
+g++ -I/usr/local/CCSDSLibrary/includes your_application.cc
+
+
+==History==
+20110612 first version (Takayuki Yuasa)
