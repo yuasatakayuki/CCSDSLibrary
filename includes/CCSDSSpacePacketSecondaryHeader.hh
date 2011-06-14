@@ -42,6 +42,10 @@ private:
 	std::bitset<14> aduSegmentCount;
 
 public:
+	static const unsigned int SecondaryHeaderLengthWithoutADUChannel = 6;
+	static const unsigned int SecondaryHeaderLengthWithADUChannel = 8;
+
+public:
 	std::vector<unsigned char> getAsByteVector() {
 		std::vector<unsigned char> result;
 		for (unsigned int i = 0; i < 4; i++) {
@@ -57,6 +61,38 @@ public:
 			result.push_back(flag_and_segmentcount % 0x100);
 		}
 		return result;
+	}
+
+public:
+	void interpret(unsigned char* data, unsigned int length) throw (CCSDSSpacePacketException) {
+		using namespace std;
+		if (length < 6) {
+			throw CCSDSSpacePacketException(CCSDSSpacePacketException::SecondaryHeaderTooShort);
+		}
+		time[0] = data[0];
+		time[1] = data[1];
+		time[2] = data[2];
+		time[3] = data[3];
+		secondaryHeaderType = bitset<1> ((data[4] & 0x80) >> 7 /* 1000 0000 */);
+		category = bitset<7> (data[4] & 0x3F/* 0111 1111 */);
+		aduCount = data[5];
+		if (secondaryHeaderType.to_ulong() == CCSDSSpacePacketSecondaryHeaderType::ADUChannelIsUsed) {
+			if (length < 9) {
+				throw CCSDSSpacePacketException(CCSDSSpacePacketException::SecondaryHeaderTooShort);
+			}
+			aduChannelID = data[6];
+			aduSegmentFlag = bitset<2> ((data[7] & 0xc0) >> 6 /* 1100 0000 */);
+
+			bitset<6> aduSegmentCount_msb6bits(data[7]&0x3F/* 0011 1111 */);
+			bitset<6> aduSegmentCount_lsb6bits(data[8]);
+			aduSegmentCount=bitset<14>();
+		}
+		for(unsigned int i=0;i<6;i++){
+			aduSegmentCount.set(i,aduSegmentCount_msb6bits[i]);
+		}
+		for(unsigned int i=0;i<8;i++){
+			aduSegmentCount.set(i+6,aduSegmentCount_lsb6bits[i]);
+		}
 	}
 
 public:
@@ -78,6 +114,14 @@ public:
 
 	std::bitset<7> getCategory() const {
 		return category;
+	}
+
+	unsigned int getLength() {
+		if (secondaryHeaderType == CCSDSSpacePacketSecondaryHeaderType::ADUChannelIsNotUsed) {
+			return SecondaryHeaderLengthWithoutADUChannel;
+		} else {
+			return SecondaryHeaderLengthWithADUChannel;
+		}
 	}
 
 	std::bitset<1> getSecondaryHeaderType() const {

@@ -89,6 +89,31 @@ public:
 	}
 
 public:
+	void interpret(unsigned char* data){
+		packetVersionNum = bitset<3> ((data[0] & 0xe0) >> 5 /* 1110 0000 */);
+		packetType = bitset<1> ((data[0] & 0x10) >> 4 /* 0001 0000 */);
+		secondaryHeaderFlag=bitset<1>((data[0] & 0x08) >> 3 /* 0000 1000 */);
+		bitset<3> apid_msb3bits((data[0] & 0x07) >> 3);
+		bitset<8> apid_lsb3bits(data[1]);
+		for(unsigned int i=0;i<3;i++){
+			apid.set(i,apid_msb3bits[i]);
+		}
+		for(unsigned int i=0;i<8;i++){
+			apid.set(i+3,apid_lsb3bits[i]);
+		}
+		sequenceFlag=bitset<2>( (data[2]&0xc0) >> 6  /* 1100 0000 */);
+		bitset<6> sequenceCount_msb6bits(data[2]&0x3F/* 0011 1111 */);
+		bitset<6> sequenceCount_lsb8bits(data[3]);
+		for(unsigned int i=0;i<6;i++){
+			sequenceCount.set(i,sequenceCount_msb6bits[i]);
+		}
+		for(unsigned int i=0;i<8;i++){
+			sequenceCount.set(i+6,sequenceCount_lsb6bits[i]);
+		}
+		packetDataLength=bitset<16>(data[4]*0x100+data[5]);
+	}
+
+public:
 	std::bitset<11> getAPID() const {
 		return apid;
 	}

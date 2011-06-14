@@ -10,6 +10,7 @@
 
 #include "CCSDSSpacePacketPrimaryHeader.hh"
 #include "CCSDSSpacePacketSecondaryHeader.hh"
+#include "CCSDSSpacePacketException.hh"
 #include <vector>
 
 class CCSDSSpacePacket {
@@ -44,6 +45,33 @@ public:
 		}
 		result.insert(result.end(), userDataField->begin(), userDataField->end());
 		return result;
+	}
+
+public:
+	void interpretAsCommandMessage(unsigned char* data, unsigned int length) throw (CCSDSSpacePacketException) {
+		using namespace std;
+		if (length < 6) {
+			throw CCSDSSpacePacketException(CCSDSSpacePacketException::NotACCSDSSpacePacket);
+		}
+		//primary header
+		primaryHeader->interpret(data);
+
+		if(primaryHeader->getSecondaryHeaderFlag().to_ulong()==CCSDSSpacePacketSecondaryHeaderFlag::NotPresent){
+			//data field
+			userDataField->clear();
+			for(unsigned int i=CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength;i<length;i++){
+				userDataField->push_back(data[i]);
+			}
+		}else{
+			//secondary header
+			secondaryHeader->interpret(data[CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength],length-CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength);
+			//data field
+			userDataField->clear();
+			for(unsigned int i=CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength+secondaryHeader->getLength();i<length;i++){
+				userDataField->push_back(data[i]);
+			}
+		}
+
 	}
 
 public:
