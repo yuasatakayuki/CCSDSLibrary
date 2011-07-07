@@ -15,6 +15,9 @@
 
 class CCSDSSpacePacket {
 public:
+	static const unsigned int APIDOfIdlePacket=0x7FF;//111 1111 1111
+
+public:
 	CCSDSSpacePacketPrimaryHeader* primaryHeader;
 	CCSDSSpacePacketSecondaryHeader* secondaryHeader;
 	std::vector<unsigned char>* userDataField;
@@ -56,22 +59,24 @@ public:
 		//primary header
 		primaryHeader->interpret(data);
 
-		if(primaryHeader->getSecondaryHeaderFlag().to_ulong()==CCSDSSpacePacketSecondaryHeaderFlag::NotPresent){
+		if (primaryHeader->getSecondaryHeaderFlag().to_ulong() == CCSDSSpacePacketSecondaryHeaderFlag::NotPresent) {
 			//data field
 			userDataField->clear();
-			for(unsigned int i=CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength;i<length;i++){
+			for (unsigned int i = CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength; i < length; i++) {
 				userDataField->push_back(data[i]);
 			}
-		}else{
+		} else {
 			//secondary header
-			secondaryHeader->interpret(data[CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength],length-CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength);
+			secondaryHeader->interpret(//
+					data+CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength, //
+					length - CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength);
 			//data field
 			userDataField->clear();
-			for(unsigned int i=CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength+secondaryHeader->getLength();i<length;i++){
+			for (unsigned int i = CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength + secondaryHeader->getLength(); i
+					< length; i++) {
 				userDataField->push_back(data[i]);
 			}
 		}
-
 	}
 
 public:
@@ -81,6 +86,10 @@ public:
 		} else {
 			primaryHeader->setPacketDataLength(userDataField->size() - 1);
 		}
+	}
+
+	void setPacketDataLength(){
+		calcPacketDataLength();
 	}
 
 	void setUserDataField(std::vector<unsigned char>* userDataField) {

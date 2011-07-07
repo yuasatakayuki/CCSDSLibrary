@@ -10,6 +10,7 @@
 
 #include <bitset>
 #include <vector>
+#include "CCSDSSpacePacketException.hh"
 
 class CCSDSSpacePacketSecondaryHeaderType {
 public:
@@ -69,13 +70,15 @@ public:
 		if (length < 6) {
 			throw CCSDSSpacePacketException(CCSDSSpacePacketException::SecondaryHeaderTooShort);
 		}
-		time[0] = data[0];
-		time[1] = data[1];
-		time[2] = data[2];
-		time[3] = data[3];
+		time[0] = *data;
+		time[1] = *(data+1);
+		time[2] = *(data+2);
+		time[3] = *(data+3);
 		secondaryHeaderType = bitset<1> ((data[4] & 0x80) >> 7 /* 1000 0000 */);
 		category = bitset<7> (data[4] & 0x3F/* 0111 1111 */);
 		aduCount = data[5];
+		bitset<6> aduSegmentCount_lsb6bits;
+		bitset<6> aduSegmentCount_msb6bits;
 		if (secondaryHeaderType.to_ulong() == CCSDSSpacePacketSecondaryHeaderType::ADUChannelIsUsed) {
 			if (length < 9) {
 				throw CCSDSSpacePacketException(CCSDSSpacePacketException::SecondaryHeaderTooShort);
@@ -83,15 +86,15 @@ public:
 			aduChannelID = data[6];
 			aduSegmentFlag = bitset<2> ((data[7] & 0xc0) >> 6 /* 1100 0000 */);
 
-			bitset<6> aduSegmentCount_msb6bits(data[7]&0x3F/* 0011 1111 */);
-			bitset<6> aduSegmentCount_lsb6bits(data[8]);
-			aduSegmentCount=bitset<14>();
+			aduSegmentCount_msb6bits=bitset<6>(data[7] & 0x3F/* 0011 1111 */);
+			aduSegmentCount_lsb6bits=bitset<6>(data[8]);
+			aduSegmentCount = bitset<14> ();
 		}
-		for(unsigned int i=0;i<6;i++){
-			aduSegmentCount.set(i,aduSegmentCount_msb6bits[i]);
+		for (unsigned int i = 0; i < 6; i++) {
+			aduSegmentCount.set(i, aduSegmentCount_msb6bits[i]);
 		}
-		for(unsigned int i=0;i<8;i++){
-			aduSegmentCount.set(i+6,aduSegmentCount_lsb6bits[i]);
+		for (unsigned int i = 0; i < 8; i++) {
+			aduSegmentCount.set(i + 6, aduSegmentCount_lsb6bits[i]);
 		}
 	}
 
