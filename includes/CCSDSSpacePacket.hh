@@ -15,7 +15,7 @@
 
 class CCSDSSpacePacket {
 public:
-	static const unsigned int APIDOfIdlePacket=0x7FF;//111 1111 1111
+	static const unsigned int APIDOfIdlePacket = 0x7FF;//111 1111 1111
 
 public:
 	CCSDSSpacePacketPrimaryHeader* primaryHeader;
@@ -30,6 +30,7 @@ public:
 
 		primaryHeader->setPacketVersionNum(CCSDSSpacePacketPacketVersionNumber::Version1);
 	}
+
 	~CCSDSSpacePacket() {
 		delete primaryHeader;
 		delete secondaryHeader;
@@ -68,7 +69,7 @@ public:
 		} else {
 			//secondary header
 			secondaryHeader->interpret(//
-					data+CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength, //
+					data + CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength, //
 					length - CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength);
 			//data field
 			userDataField->clear();
@@ -88,7 +89,7 @@ public:
 		}
 	}
 
-	void setPacketDataLength(){
+	void setPacketDataLength() {
 		calcPacketDataLength();
 	}
 
@@ -98,6 +99,85 @@ public:
 
 	void setUserDataField(std::vector<unsigned char> userDataField) {
 		*(this->userDataField) = userDataField;
+	}
+
+public:
+public:
+	virtual std::string toString() {
+		std::stringstream ss;
+		using std::endl;
+		ss << "---------------------------------" << endl;
+		ss << "CCSDSSpacePacket" << endl;
+		ss << "---------------------------------" << endl;
+		ss << primaryHeader->toString();
+
+		if (primaryHeader->getSecondaryHeaderFlag().to_ulong()==CCSDSSpacePacketSecondaryHeaderFlag::Present) {
+			secondaryHeader->toString();
+		}else{
+			ss << "No secondary header" << endl;
+		}
+
+		if (userDataField->size()!=0) {
+			ss << "User data field has " <<dec << userDataField->size();
+			if(userDataField->size()<2){
+				ss << " byte" << endl;
+			}else{
+				ss << " bytes" << endl;
+			}
+			ss << arrayToString(userDataField,"hex") << endl;
+		}else{
+			ss << "No user data field" << endl;
+		}
+		ss << endl;
+		return ss.str();
+	}
+
+	virtual void dump(std::ostream& os) {
+		os << this->toString();
+	}
+
+	virtual void dump(std::ostream* os) {
+		*os << this->toString();
+	}
+
+	virtual void dumpToScreen() {
+		dump(std::cout);
+	}
+
+public:
+	static std::string arrayToString(std::vector<unsigned char>* data, std::string mode = "dec", int maxBytesToBeDumped = 8) {
+		//copied from CxxUtilities::Array
+
+		using namespace std;
+		stringstream ss;
+		int maxSize;
+		if (data->size() < maxBytesToBeDumped) {
+			maxSize = data->size();
+		} else {
+			maxSize = maxBytesToBeDumped;
+		}
+		for (int i = 0; i < maxSize; i++) {
+			if (mode == "dec") {
+				ss << dec << left << (uint32_t) data->at(i);
+			} else if (mode == "hex") {
+				ss << hex << "0x" << setw(2) << setfill('0') << right << (uint32_t) data->at(i);
+			} else {
+				ss << data->at(i);
+			}
+			if (i != maxSize - 1) {
+				ss << " ";
+			}
+		}
+		ss << dec;
+		if (maxSize < data->size()) {
+			ss << " ... (total size = " << dec << data->size();
+			if(data->size()==1){
+				ss << " entry)";
+			}else{
+				ss << " entries)";
+			}
+		}
+		return ss.str();
 	}
 
 };

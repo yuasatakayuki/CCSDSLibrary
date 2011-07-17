@@ -71,9 +71,9 @@ public:
 			throw CCSDSSpacePacketException(CCSDSSpacePacketException::SecondaryHeaderTooShort);
 		}
 		time[0] = *data;
-		time[1] = *(data+1);
-		time[2] = *(data+2);
-		time[3] = *(data+3);
+		time[1] = *(data + 1);
+		time[2] = *(data + 2);
+		time[3] = *(data + 3);
 		secondaryHeaderType = bitset<1> ((data[4] & 0x80) >> 7 /* 1000 0000 */);
 		category = bitset<7> (data[4] & 0x3F/* 0111 1111 */);
 		aduCount = data[5];
@@ -86,8 +86,8 @@ public:
 			aduChannelID = data[6];
 			aduSegmentFlag = bitset<2> ((data[7] & 0xc0) >> 6 /* 1100 0000 */);
 
-			aduSegmentCount_msb6bits=bitset<6>(data[7] & 0x3F/* 0011 1111 */);
-			aduSegmentCount_lsb6bits=bitset<6>(data[8]);
+			aduSegmentCount_msb6bits = bitset<6> (data[7] & 0x3F/* 0011 1111 */);
+			aduSegmentCount_lsb6bits = bitset<6> (data[8]);
 			aduSegmentCount = bitset<14> ();
 		}
 		for (unsigned int i = 0; i < 6; i++) {
@@ -179,6 +179,29 @@ public:
 		for (unsigned int i = 0; i < 4; i++) {
 			this->time[i] = time[i];
 		}
+	}
+
+public:
+	std::string toString() {
+		using namespace std;
+		stringstream ss;
+
+		uint64_t time_integer=0;
+		uint64_t factor=1;
+		for(int i=0;i<4;i++){
+			time_integer+=factor*time[0];
+			factor*=0x100;
+		}
+
+		ss << "SecondaryHeader" << endl;
+		ss << "Time                : " << time_integer << endl;
+		ss << "SecondaryHeaderType : " << secondaryHeaderType.to_string() << endl;
+		ss << "Category            : " << category.to_string() << endl;
+		ss << "ADUCount            : " << (uint32_t)aduCount << endl;
+		ss << "ADUChannelID        : " << (uint32_t)aduChannelID << endl;
+		ss << "ADUSegmentFlag      : " << aduSegmentFlag.to_string() << endl;
+		ss << "ADUSegmentCount     : " << aduSegmentCount.to_ulong() << endl;
+		return ss.str();
 	}
 
 };

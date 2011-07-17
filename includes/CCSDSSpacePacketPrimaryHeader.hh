@@ -89,29 +89,29 @@ public:
 	}
 
 public:
-	void interpret(unsigned char* data){
+	void interpret(unsigned char* data) {
 		using namespace std;
 		packetVersionNum = bitset<3> ((data[0] & 0xe0) >> 5 /* 1110 0000 */);
 		packetType = bitset<1> ((data[0] & 0x10) >> 4 /* 0001 0000 */);
-		secondaryHeaderFlag=bitset<1>((data[0] & 0x08) >> 3 /* 0000 1000 */);
+		secondaryHeaderFlag = bitset<1> ((data[0] & 0x08) >> 3 /* 0000 1000 */);
 		bitset<3> apid_msb3bits((data[0] & 0x07) >> 3);
-		bitset<8> apid_lsb3bits(data[1]);
-		for(unsigned int i=0;i<3;i++){
-			apid.set(i,apid_msb3bits[i]);
+		bitset<8> apid_lsb8bits(data[1]);
+		for (unsigned int i = 0; i < 3; i++) {
+			apid.set(i, apid_msb3bits[i]);
 		}
-		for(unsigned int i=0;i<8;i++){
-			apid.set(i+3,apid_lsb3bits[i]);
+		for (unsigned int i = 0; i < 8; i++) {
+			apid.set(i + 3, apid_lsb8bits[i]);
 		}
-		sequenceFlag=bitset<2>( (data[2]&0xc0) >> 6  /* 1100 0000 */);
-		bitset < 6 > sequenceCount_msb6bits(data[2] & 0x3F/* 0011 1111 */);
+		sequenceFlag = bitset<2> ((data[2] & 0xc0) >> 6 /* 1100 0000 */);
+		bitset<6> sequenceCount_msb6bits(data[2] & 0x3F/* 0011 1111 */);
 		bitset<6> sequenceCount_lsb8bits(data[3]);
-		for(unsigned int i=0;i<6;i++){
-			sequenceCount.set(i,sequenceCount_msb6bits[i]);
+		for (unsigned int i = 0; i < 6; i++) {
+			sequenceCount.set(i, sequenceCount_msb6bits[i]);
 		}
-		for(unsigned int i=0;i<8;i++){
-			sequenceCount.set(i+6,sequenceCount_lsb8bits[i]);
+		for (unsigned int i = 0; i < 8; i++) {
+			sequenceCount.set(i + 6, sequenceCount_lsb8bits[i]);
 		}
-		packetDataLength=bitset<16>(data[4]*0x100+data[5]);
+		packetDataLength = bitset<16> (data[4] * 0x100 + data[5]);
 	}
 
 public:
@@ -201,7 +201,20 @@ public:
 	}
 
 public:
-
+	virtual std::string toString() {
+		using namespace std;
+		stringstream ss;
+		ss << "PrimaryHeader" << endl;
+		ss << "PacketVersionNum    : " << packetVersionNum.to_string() << endl;
+		ss << "PacketType          : " << packetType.to_string() << endl;
+		ss << "SecondaryHeaderFlag : " << secondaryHeaderFlag.to_string() << endl;
+		ss << "APID                : " << apid.to_ulong();
+		ss << " (0x" << hex << right << setw(2) << setfill('0') << apid.to_ulong() << ")" << left << endl;
+		ss << "SequenceFlag        : " << sequenceFlag.to_string() << endl;
+		ss << "SequenceCount       : " << sequenceCount.to_ulong() << endl;
+		ss << "PacketDataLength    : " << packetDataLength.to_ulong() << endl;
+		return ss.str();
+	}
 };
 
 #endif /* CCSDSSPACEPACKETPRIMARYHEADER_HH_ */
