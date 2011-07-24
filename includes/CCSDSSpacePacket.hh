@@ -54,7 +54,7 @@ public:
 	}
 
 public:
-	void interpretAsCommandMessage(unsigned char* data, unsigned int length) throw (CCSDSSpacePacketException) {
+	void interpret(unsigned char* data, unsigned int length) throw (CCSDSSpacePacketException) {
 		using namespace std;
 		if (length < 6) {
 			throw CCSDSSpacePacketException(CCSDSSpacePacketException::NotACCSDSSpacePacket);
@@ -79,6 +79,12 @@ public:
 					< length; i++) {
 				userDataField->push_back(data[i]);
 			}
+		}
+	}
+
+	void interpret(std::vector<unsigned char>& data) {
+		if (data.size() != 0) {
+			interpret(&(data[0]), data.size());
 		}
 	}
 

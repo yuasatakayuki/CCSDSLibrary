@@ -35,7 +35,7 @@ int main(int argc,char* argv[]){
 	for(int i=1;i<argc;i++){
 		data.push_back((unsigned char)toInteger(argv[i]));
 	}
-	packet->interpretAsCommandMessage(&(data.at(0)),data.size());
+	packet->interpret(&(data.at(0)),data.size());
 
 	packet->dumpToScreen();
 }
