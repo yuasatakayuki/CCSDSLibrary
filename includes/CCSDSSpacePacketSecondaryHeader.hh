@@ -10,6 +10,10 @@
 
 #include <bitset>
 #include <vector>
+#include <sstream>
+#include <iomanip>
+#include <iostream>
+
 #include "CCSDSSpacePacketException.hh"
 
 class CCSDSSpacePacketSecondaryHeaderType {

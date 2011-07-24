@@ -12,6 +12,8 @@
 #include "CCSDSSpacePacketSecondaryHeader.hh"
 #include "CCSDSSpacePacketException.hh"
 #include <vector>
+#include <iomanip>
+#include <sstream>
 
 class CCSDSSpacePacket {
 public:
@@ -111,21 +113,21 @@ public:
 		ss << "---------------------------------" << endl;
 		ss << primaryHeader->toString();
 
-		if (primaryHeader->getSecondaryHeaderFlag().to_ulong()==CCSDSSpacePacketSecondaryHeaderFlag::Present) {
+		if (primaryHeader->getSecondaryHeaderFlag().to_ulong() == CCSDSSpacePacketSecondaryHeaderFlag::Present) {
 			secondaryHeader->toString();
-		}else{
+		} else {
 			ss << "No secondary header" << endl;
 		}
 
-		if (userDataField->size()!=0) {
-			ss << "User data field has " <<dec << userDataField->size();
-			if(userDataField->size()<2){
+		if (userDataField->size() != 0) {
+			ss << "User data field has " << std::dec << userDataField->size();
+			if (userDataField->size() < 2) {
 				ss << " byte" << endl;
-			}else{
+			} else {
 				ss << " bytes" << endl;
 			}
-			ss << arrayToString(userDataField,"hex") << endl;
-		}else{
+			ss << arrayToString(userDataField, "hex") << endl;
+		} else {
 			ss << "No user data field" << endl;
 		}
 		ss << endl;
@@ -145,7 +147,8 @@ public:
 	}
 
 public:
-	static std::string arrayToString(std::vector<unsigned char>* data, std::string mode = "dec", int maxBytesToBeDumped = 8) {
+	static std::string arrayToString(std::vector<unsigned char>* data, std::string mode = "dec",
+			int maxBytesToBeDumped = 8) {
 		//copied from CxxUtilities::Array
 
 		using namespace std;
@@ -171,9 +174,9 @@ public:
 		ss << dec;
 		if (maxSize < data->size()) {
 			ss << " ... (total size = " << dec << data->size();
-			if(data->size()==1){
+			if (data->size() == 1) {
 				ss << " entry)";
-			}else{
+			} else {
 				ss << " entries)";
 			}
 		}

@@ -10,6 +10,9 @@
 
 #include <bitset>
 #include <vector>
+#include <sstream>
+#include <iomanip>
+#include <iostream>
 
 class CCSDSSpacePacketPacketVersionNumber {
 public:
@@ -97,19 +100,23 @@ public:
 		bitset<3> apid_msb3bits((data[0] & 0x07) >> 3);
 		bitset<8> apid_lsb8bits(data[1]);
 		for (unsigned int i = 0; i < 3; i++) {
-			apid.set(i, apid_msb3bits[i]);
+			apid.set(i + 8, apid_msb3bits[i]);
 		}
 		for (unsigned int i = 0; i < 8; i++) {
-			apid.set(i + 3, apid_lsb8bits[i]);
+			apid.set(i, apid_lsb8bits[i]);
 		}
+		cout << "#data[1]=" << (uint32_t) data[1] << endl;
+		cout << "#apid_lsb8bits=" << apid_lsb8bits.to_string() << endl;
+		cout << "#apid         =" << apid.to_string() << endl;
+		cout << "#apid=" << (uint32_t) apid.to_ulong() << endl;
 		sequenceFlag = bitset<2> ((data[2] & 0xc0) >> 6 /* 1100 0000 */);
 		bitset<6> sequenceCount_msb6bits(data[2] & 0x3F/* 0011 1111 */);
 		bitset<6> sequenceCount_lsb8bits(data[3]);
 		for (unsigned int i = 0; i < 6; i++) {
-			sequenceCount.set(i, sequenceCount_msb6bits[i]);
+			sequenceCount.set(i + 8, sequenceCount_msb6bits[i]);
 		}
 		for (unsigned int i = 0; i < 8; i++) {
-			sequenceCount.set(i + 6, sequenceCount_lsb8bits[i]);
+			sequenceCount.set(i, sequenceCount_lsb8bits[i]);
 		}
 		packetDataLength = bitset<16> (data[4] * 0x100 + data[5]);
 	}
@@ -203,16 +210,31 @@ public:
 public:
 	virtual std::string toString() {
 		using namespace std;
-		stringstream ss;
+		std::stringstream ss;
 		ss << "PrimaryHeader" << endl;
 		ss << "PacketVersionNum    : " << packetVersionNum.to_string() << endl;
 		ss << "PacketType          : " << packetType.to_string() << endl;
 		ss << "SecondaryHeaderFlag : " << secondaryHeaderFlag.to_string() << endl;
 		ss << "APID                : " << apid.to_ulong();
-		ss << " (0x" << hex << right << setw(2) << setfill('0') << apid.to_ulong() << ")" << left << endl;
-		ss << "SequenceFlag        : " << sequenceFlag.to_string() << endl;
+		ss << " (0x" << hex << setw(2) << setfill('0') << right << apid.to_ulong() << ")" << left << endl;
+		ss << "SequenceFlag        : " << sequenceFlag.to_string();
+		switch (sequenceFlag.to_ulong()) {
+		case 0:
+			ss << " (Continuation segment of user data)" << endl;
+			break;
+		case 1:
+			ss << " (First segment of user data)" << endl;
+			break;
+		case 2:
+			ss << " (Last segment of user data)" << endl;
+			break;
+		case 3:
+			ss << " (Unsegmented user data)" << endl;
+			break;
+		}
 		ss << "SequenceCount       : " << sequenceCount.to_ulong() << endl;
-		ss << "PacketDataLength    : " << packetDataLength.to_ulong() << endl;
+		ss << "PacketDataLength    : " << packetDataLength.to_ulong();
+		ss << " (User data field has " << dec <<packetDataLength.to_ulong()+1 << " bytes)" << endl;
 		return ss.str();
 	}
 };
