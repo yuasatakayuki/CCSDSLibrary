@@ -68,6 +68,12 @@ public:
 	static const unsigned int MaximumLengthOfDataFieldOfTMPacketWithoutADUChannel = 1012;
 	static const unsigned int MaximumLengthOfDataFieldOfTMPacketWithADUChannel = 1009;
 
+
+public:
+	CCSDSSpacePacketPrimaryHeader() {
+		this->setPacketVersionNum(CCSDSSpacePacketPacketVersionNumber::Version1);
+	}
+
 public:
 	std::vector<unsigned char> getAsByteVector() {
 		std::vector<unsigned char> result;
@@ -170,6 +176,7 @@ public:
 		this->packetType = std::bitset<1>(packetType);
 	}
 
+private:
 	void setPacketVersionNum(std::bitset<3> packetVersionNum) {
 		this->packetVersionNum = packetVersionNum;
 	}
@@ -178,6 +185,7 @@ public:
 		this->packetVersionNum = std::bitset<3>(packetVersionNum);
 	}
 
+public:
 	void setSecondaryHeaderFlag(std::bitset<1> secondaryHeaderFlag) {
 		this->secondaryHeaderFlag = secondaryHeaderFlag;
 	}
@@ -200,11 +208,6 @@ public:
 
 	void setSequenceFlag(unsigned int sequentialFlags) {
 		this->sequenceFlag = std::bitset<2>(sequentialFlags);
-	}
-
-public:
-	CCSDSSpacePacketPrimaryHeader() {
-
 	}
 
 public:

@@ -17,7 +17,7 @@
 
 class CCSDSSpacePacket {
 public:
-	static const unsigned int APIDOfIdlePacket = 0x7FF;//111 1111 1111
+	static const unsigned int APIDOfIdlePacket = 0x7FF; //111 1111 1111
 
 public:
 	CCSDSSpacePacketPrimaryHeader* primaryHeader;
@@ -29,8 +29,7 @@ public:
 		primaryHeader = new CCSDSSpacePacketPrimaryHeader();
 		secondaryHeader = new CCSDSSpacePacketSecondaryHeader();
 		userDataField = new std::vector<unsigned char>();
-
-		primaryHeader->setPacketVersionNum(CCSDSSpacePacketPacketVersionNumber::Version1);
+		//primaryHeader->setPacketVersionNum(CCSDSSpacePacketPacketVersionNumber::Version1);
 	}
 
 	~CCSDSSpacePacket() {
@@ -54,14 +53,14 @@ public:
 	}
 
 public:
-	void interpret(unsigned char* data, unsigned int length) throw (CCSDSSpacePacketException) {
+	void interpret(unsigned char *data, unsigned int length) throw (CCSDSSpacePacketException) {
 		using namespace std;
+
 		if (length < 6) {
 			throw CCSDSSpacePacketException(CCSDSSpacePacketException::NotACCSDSSpacePacket);
 		}
 		//primary header
 		primaryHeader->interpret(data);
-
 		if (primaryHeader->getSecondaryHeaderFlag().to_ulong() == CCSDSSpacePacketSecondaryHeaderFlag::NotPresent) {
 			//data field
 			userDataField->clear();
@@ -70,25 +69,25 @@ public:
 			}
 		} else {
 			//secondary header
-			secondaryHeader->interpret(//
-					data + CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength, //
-					length - CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength);
+			secondaryHeader->interpret(data + CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength, //
+			length - CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength);
 			//data field
 			userDataField->clear();
-			for (unsigned int i = CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength + secondaryHeader->getLength(); i
-					< length; i++) {
+			for (unsigned int i = CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength + secondaryHeader->getLength();
+					i < length; i++) {
 				userDataField->push_back(data[i]);
 			}
 		}
+
 	}
 
-	void interpret(std::vector<unsigned char>& data) {
+	void interpret(std::vector<unsigned char> & data) {
 		if (data.size() != 0) {
 			interpret(&(data[0]), data.size());
 		}
 	}
 
-public:
+private:
 	void calcPacketDataLength() {
 		if (primaryHeader->getSecondaryHeaderFlag().to_ulong() == CCSDSSpacePacketSecondaryHeaderFlag::Present) {
 			primaryHeader->setPacketDataLength(secondaryHeader->getAsByteVector().size() + userDataField->size() - 1);
@@ -97,16 +96,19 @@ public:
 		}
 	}
 
+public:
 	void setPacketDataLength() {
 		calcPacketDataLength();
 	}
 
-	void setUserDataField(std::vector<unsigned char>* userDataField) {
+	void setUserDataField(std::vector<unsigned char> *userDataField) {
 		*(this->userDataField) = *userDataField;
+		setPacketDataLength();
 	}
 
 	void setUserDataField(std::vector<unsigned char> userDataField) {
 		*(this->userDataField) = userDataField;
+		setPacketDataLength();
 	}
 
 public:
@@ -118,13 +120,11 @@ public:
 		ss << "CCSDSSpacePacket" << endl;
 		ss << "---------------------------------" << endl;
 		ss << primaryHeader->toString();
-
 		if (primaryHeader->getSecondaryHeaderFlag().to_ulong() == CCSDSSpacePacketSecondaryHeaderFlag::Present) {
 			secondaryHeader->toString();
 		} else {
 			ss << "No secondary header" << endl;
 		}
-
 		if (userDataField->size() != 0) {
 			ss << "User data field has " << std::dec << userDataField->size();
 			if (userDataField->size() < 2) {
@@ -140,11 +140,11 @@ public:
 		return ss.str();
 	}
 
-	virtual void dump(std::ostream& os) {
+	virtual void dump(std::ostream & os) {
 		os << this->toString();
 	}
 
-	virtual void dump(std::ostream* os) {
+	virtual void dump(std::ostream *os) {
 		*os << this->toString();
 	}
 
@@ -153,11 +153,11 @@ public:
 	}
 
 public:
-	static std::string arrayToString(std::vector<unsigned char>* data, std::string mode = "dec",
+	static std::string arrayToString(std::vector<unsigned char> *data, std::string mode = "dec",
 			int maxBytesToBeDumped = 8) {
 		//copied from CxxUtilities::Array
-
 		using namespace std;
+
 		stringstream ss;
 		int maxSize;
 		if (data->size() < maxBytesToBeDumped) {
@@ -167,9 +167,9 @@ public:
 		}
 		for (int i = 0; i < maxSize; i++) {
 			if (mode == "dec") {
-				ss << dec << left << (uint32_t) data->at(i);
+				ss << dec << left << (uint32_t) (data->at(i));
 			} else if (mode == "hex") {
-				ss << hex << "0x" << setw(2) << setfill('0') << right << (uint32_t) data->at(i);
+				ss << hex << "0x" << setw(2) << setfill('0') << right << (uint32_t) (data->at(i));
 			} else {
 				ss << data->at(i);
 			}
@@ -189,6 +189,14 @@ public:
 		return ss.str();
 	}
 
+public:
+	inline CCSDSSpacePacketPrimaryHeader* getPrimaryHeader() const {
+		return primaryHeader;
+	}
+
+	inline CCSDSSpacePacketSecondaryHeader* getSecondaryHeader() const {
+		return secondaryHeader;
+	}
 };
 
 #endif /* CCSDSSPACEPACKET_HH_ */
