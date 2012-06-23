@@ -47,7 +47,7 @@ public:
 		ContinuationSegument = 0x00, //00b
 		TheFirstSegment = 0x01, //01b
 		TheLastSegment = 0x02, //10b
-		UnsegmentedADU = 0x03, //11b
+		UnsegmentedUserData = 0x03, //11b
 		Undefined = 0xffff
 	};
 };
@@ -111,10 +111,12 @@ public:
 		for (unsigned int i = 0; i < 8; i++) {
 			apid.set(i, apid_lsb8bits[i]);
 		}
+		/*
 		cout << "#data[1]=" << (uint32_t) data[1] << endl;
 		cout << "#apid_lsb8bits=" << apid_lsb8bits.to_string() << endl;
 		cout << "#apid         =" << apid.to_string() << endl;
 		cout << "#apid=" << (uint32_t) apid.to_ulong() << endl;
+		*/
 		sequenceFlag = bitset<2> ((data[2] & 0xc0) >> 6 /* 1100 0000 */);
 		bitset<6> sequenceCount_msb6bits(data[2] & 0x3F/* 0011 1111 */);
 		bitset<6> sequenceCount_lsb8bits(data[3]);
@@ -202,12 +204,12 @@ public:
 		this->sequenceCount = std::bitset<14>(sequenceCount);
 	}
 
-	void setSequenceFlag(std::bitset<2> sequentialFlags) {
-		this->sequenceFlag = sequentialFlags;
+	void setSequenceFlag(std::bitset<2> sequenceFlags) {
+		this->sequenceFlag = sequenceFlags;
 	}
 
-	void setSequenceFlag(unsigned int sequentialFlags) {
-		this->sequenceFlag = std::bitset<2>(sequentialFlags);
+	void setSequenceFlag(unsigned int sequeceFlags) {
+		this->sequenceFlag = std::bitset<2>(sequeceFlags);
 	}
 
 public:

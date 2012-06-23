@@ -25,7 +25,7 @@ public:
 	};
 };
 
-class CCSDSSpacePacketADUChannelID {
+class CCSDSSpacePacketADUSegmentFlag {
 public:
 	enum {
 		ContinuationSegument = 0x00, //00b
@@ -56,12 +56,12 @@ public:
 		for (unsigned int i = 0; i < 4; i++) {
 			result.push_back(time[i]);
 		}
-		unsigned char avalue = secondaryHeaderType.to_ulong() * 0x10 + category.to_ulong();
+		unsigned char avalue = secondaryHeaderType.to_ulong() * 0x80 + category.to_ulong();
 		result.push_back(avalue);
 		result.push_back(aduCount);
 		if (secondaryHeaderType.to_ulong() == CCSDSSpacePacketSecondaryHeaderType::ADUChannelIsUsed) {
 			result.push_back(aduChannelID);
-			unsigned int flag_and_segmentcount = aduSegmentFlag.to_ulong() * 0x40 + aduSegmentCount.to_ulong();
+			unsigned int flag_and_segmentcount = aduSegmentFlag.to_ulong() * 0x4000 + aduSegmentCount.to_ulong();
 			result.push_back(flag_and_segmentcount / 0x100);
 			result.push_back(flag_and_segmentcount % 0x100);
 		}
@@ -183,6 +183,13 @@ public:
 		for (unsigned int i = 0; i < 4; i++) {
 			this->time[i] = time[i];
 		}
+	}
+
+	void setTime(uint32_t time){
+		this->time[0] = (time & 0xFF000000) >> 24;
+		this->time[1] = (time & 0x00FF0000) >> 16;
+		this->time[2] = (time & 0x0000FF00) >> 8;
+		this->time[3] = (time & 0x000000FF) >> 0;
 	}
 
 public:
