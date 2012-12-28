@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>CCSDS SpacePacket Library by yuasatakayuki</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">CCSDS SpacePacket Library</h1>
+        <p class="header">manipulates SpacePackets</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/yuasatakayuki/CCSDSLibrary/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/yuasatakayuki/CCSDSLibrary/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/yuasatakayuki/CCSDSLibrary">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/yuasatakayuki">yuasatakayuki</a></p>
+
+
+      </header>
+      <section>
+        <h2>Introduction</h2>
+
+<p>CCSDS SpacePacket Library is a header-only C++ class library
+that manipulates packets in the CCSDS SpacePacket format.
+Secondary Header Part is implemented for JAXA/ISAS missions.</p>
+
+<p>Related libraries:</p>
+
+<ul>
+<li><a href="https://github.com/yuasatakayuki/SpaceWireRMAPLibrary">SpaceWire RMAP Library</a></li>
+<li><a href="https://github.com/yuasatakayuki/SMCPLibrary">SMCP Library</a></li>
+</ul><h2>Installation and Build</h2>
+
+<p>Git repository is hosted on the github.com.
+To install the latest source tree, execute git clone like below.</p>
+
+<pre><code>git clone https://github.com/yuasatakayuki/CCSDSLibrary.git
+</code></pre>
+
+<p>The library does not need to be pre-compiled since this consists
+only from header files. Just include CCSDSLibrary/includes/CCSDS.hh
+and provide a header search path to your compiler.</p>
+
+<p>For example, in a source file,</p>
+
+<pre><code>#include "CCSDS.hh"
+...your source...
+</code></pre>
+
+<p>and compile it with a -I flag,</p>
+
+<pre><code>g++ -I/path/to/CCSDSLibrary/includes your_application.cc -o your_application
+</code></pre>
+
+<h2>Classes</h2>
+
+<p>Users mainly interface with instances of the CCSDSSpacePacket class.
+CCSDSSpacePacket internally contains</p>
+
+<ul>
+<li>Primary Header (the CCSDSSpacePacketPrimaryHeader class)</li>
+<li>Secondary Header (if used; the CCSDSSpacePacketSecondaryHeader class)</li>
+<li>User Data Field (std::vector)</li>
+</ul><p>See <a href="annotated.html">Class List</a> for complete API reference.</p>
+
+<h2>Example Usages</h2>
+
+<h3>Packet creation</h3>
+
+<div class="highlight"><pre>    <span class="c1">//constructs an empty instance</span>
+    <span class="n">CCSDSSpacePacket</span><span class="o">*</span> <span class="n">ccsdsPacket</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CCSDSSpacePacket</span><span class="p">();</span>
+
+    <span class="c1">//set APID</span>
+    <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">getPrimaryHeader</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">setAPID</span><span class="p">(</span><span class="n">apid</span><span class="p">);</span>
+
+    <span class="c1">//set Packet Type (Telemetry or Command)</span>
+    <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">getPrimaryHeader</span><span class="p">()</span><span class="o">-&gt;</span>
+        <span class="n">setPacketType</span><span class="p">(</span><span class="n">CCSDSSpacePacketPacketType</span><span class="o">::</span><span class="n">TelemetryPacket</span><span class="p">);</span>
+
+    <span class="c1">//set Secondary Header Flag (whether this packet has the Secondary Header part)</span>
+    <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">getPrimaryHeader</span><span class="p">()</span><span class="o">-&gt;</span>
+        <span class="n">setSecondaryHeaderFlag</span><span class="p">(</span>
+            <span class="n">CCSDSSpacePacketSecondaryHeaderFlag</span><span class="o">::</span><span class="n">Present</span>
+        <span class="p">);</span>
+
+    <span class="c1">//set segmentation information</span>
+    <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">getPrimaryHeader</span><span class="p">()</span><span class="o">-&gt;</span>
+        <span class="n">setSequenceFlag</span><span class="p">(</span>
+            <span class="n">CCSDSSpacePacketSequenceFlag</span><span class="o">::</span><span class="n">UnsegmentedUserData</span>
+        <span class="p">);</span>
+
+    <span class="c1">//set Category</span>
+    <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">getSecondaryHeader</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">setCategory</span><span class="p">(</span><span class="n">category</span><span class="p">);</span>
+
+    <span class="c1">//set secondary header type (whether ADU Channel presence)</span>
+    <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">getSecondaryHeader</span><span class="p">()</span><span class="o">-&gt;</span>
+        <span class="n">setSecondaryHeaderType</span><span class="p">(</span>
+            <span class="n">CCSDSSpacePacketSecondaryHeaderType</span><span class="o">::</span><span class="n">ADUChannelIsUsed</span>
+        <span class="p">);</span>
+
+    <span class="c1">//set ADU Channel ID</span>
+    <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">getSecondaryHeader</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">setADUChannelID</span><span class="p">(</span><span class="mh">0x00</span><span class="p">);</span>
+
+    <span class="c1">//set ADU Segmentation Flag (whether ADU is segmented)</span>
+    <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">getSecondaryHeader</span><span class="p">()</span><span class="o">-&gt;</span>
+        <span class="n">setADUSegmentFlag</span><span class="p">(</span>
+            <span class="n">CCSDSSpacePacketADUSegmentFlag</span><span class="o">::</span><span class="n">UnsegmentedADU</span>
+        <span class="p">);</span>
+
+    <span class="c1">//set counters</span>
+    <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">getPrimaryHeader</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">setSequenceCount</span><span class="p">(</span><span class="n">sequenceCount</span><span class="p">);</span>
+    <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">getSecondaryHeader</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">setADUCount</span><span class="p">(</span><span class="n">aduCount</span><span class="p">);</span>
+
+    <span class="c1">//set absolute time</span>
+    <span class="n">uint8_t</span> <span class="n">time</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
+    <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">getSecondaryHeader</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">setTime</span><span class="p">(</span><span class="n">time</span><span class="p">);</span>
+
+    <span class="c1">//set data</span>
+    <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">setUserDataField</span><span class="p">(</span><span class="n">smcpByteArray</span><span class="p">);</span>
+    <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">setPacketDataLength</span><span class="p">();</span>
+
+    <span class="c1">//get packet as byte array</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">uint8_t</span><span class="o">&gt;</span> <span class="n">packet</span> <span class="o">=</span> <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">getAsByteVector</span><span class="p">();</span>
+</pre></div>
+
+<h3>Packet interpretation</h3>
+
+<div class="highlight"><pre>    <span class="c1">//constructs an empty instance</span>
+    <span class="n">CCSDSSpacePacket</span><span class="o">*</span> <span class="n">ccsdsPacket</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CCSDSSpacePacket</span><span class="p">();</span>
+
+    <span class="c1">//interpret an input data as a CCSDS SpacePacket</span>
+    <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">interpret</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">length</span><span class="p">);</span>
+
+    <span class="c1">//check if the packet has Secondary Header</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">isSecondaryHeaderPresent</span><span class="p">()){</span>
+        <span class="p">...</span>
+    <span class="p">}</span>
+
+    <span class="c1">//get APID</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> 
+        <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">getPrimaryHeader</span><span class="p">()</span><span class="o">-&gt;</span>
+            <span class="n">getAPIDAsInteger</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+    <span class="c1">//dump packet content</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">ccsdsPacket</span><span class="o">-&gt;</span><span class="n">toString</span><span class="p">()</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</pre></div>
+
+<h2>Feedback</h2>
+
+<p>Questions, comments, and requests are welcome.
+Raise them to
+<a href="https://github.com/yuasatakayuki/CCSDSLibrary">
+the CCSDS SpacePacket Library Github site</a>.</p>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
