@@ -8,26 +8,40 @@
 #ifndef CCSDSSPACEPACKETEXCEPTION_HH_
 #define CCSDSSPACEPACKETEXCEPTION_HH_
 
+
+/** An exception class used by the CCSDSSpacePacket class.
+ */
 class CCSDSSpacePacketException {
 public:
 	enum {
-		NotACCSDSSpacePacket = 0x01, SecondaryHeaderTooShort = 0x10,
+		NotACCSDSSpacePacket = 0x01, //
+		SecondaryHeaderTooShort = 0x10,
 
 	};
 public:
-	unsigned int status;
+	uint32_t status;
 
 public:
-	unsigned int getStatus() const {
+	/** Returns exception status.
+	 * @returns exception status.
+	 */
+	uint32_t getStatus() const {
 		return status;
 	}
 
-	void setStatus(unsigned int status) {
+public:
+	/** Sets exception status.
+	 * @param[in] status exception status.
+	 */
+	void setStatus(uint32_t status) {
 		this->status = status;
 	}
 
 public:
-	CCSDSSpacePacketException(unsigned int status) {
+	/** Constructs an instance with an exception status.
+	 * @param[in] status exception status.
+	 */
+	CCSDSSpacePacketException(uint32_t status) {
 		this->status = status;
 	}
 

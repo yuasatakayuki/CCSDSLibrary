@@ -52,6 +52,9 @@ public:
 	};
 };
 
+/** A class that represents the Primary Header part of a CCSDS SpacePacket.
+ * @see CCSDSSpacePacket for detailed usage.
+ */
 class CCSDSSpacePacketPrimaryHeader {
 private:
 	std::bitset<3> packetVersionNum;
@@ -63,156 +66,255 @@ private:
 	std::bitset<16> packetDataLength;
 
 public:
-	static const unsigned int PrimaryHeaderLength = 6;
-	static const unsigned int MaximumLengthOfDataFieldOfTCPacket = 1010;
-	static const unsigned int MaximumLengthOfDataFieldOfTMPacketWithoutADUChannel = 1012;
-	static const unsigned int MaximumLengthOfDataFieldOfTMPacketWithADUChannel = 1009;
-
+	static const size_t PrimaryHeaderLength = 6;
+	static const size_t MaximumLengthOfDataFieldOfTCPacket = 1010;
+	static const size_t MaximumLengthOfDataFieldOfTMPacketWithoutADUChannel = 1012;
+	static const size_t MaximumLengthOfDataFieldOfTMPacketWithADUChannel = 1009;
 
 public:
+	/** Constructor.
+	 */
 	CCSDSSpacePacketPrimaryHeader() {
 		this->setPacketVersionNum(CCSDSSpacePacketPacketVersionNumber::Version1);
 	}
 
 public:
-	std::vector<unsigned char> getAsByteVector() {
-		std::vector<unsigned char> result;
+	/** Destructor.
+	 */
+	virtual ~CCSDSSpacePacketPrimaryHeader() {
+	}
+
+public:
+	/** Returns packet content as a std::vector<uint8_t> instance.
+	 * @returns packet content byte array.
+	 */
+	std::vector<uint8_t> getAsByteVector() {
+		std::vector<uint8_t> result;
 		std::string str = packetVersionNum.to_string() + packetType.to_string() + secondaryHeaderFlag.to_string()
 				+ apid.to_string() + sequenceFlag.to_string() + sequenceCount.to_string();
-		unsigned int length = packetDataLength.to_ulong();
+		size_t length = packetDataLength.to_ulong();
 		std::bitset<32> bits;
-		for (unsigned int i = 0; i < 32; i++) {
+		for (size_t i = 0; i < 32; i++) {
 			if (str[i] == '0') {
 				bits.set(32 - i - 1, 0);
 			} else {
 				bits.set(32 - i - 1, 1);
 			}
 		}
-		result.push_back((unsigned char) (bits >> 24).to_ulong());
-		result.push_back((unsigned char) ((bits << 8) >> 24).to_ulong());
-		result.push_back((unsigned char) ((bits << 16) >> 24).to_ulong());
-		result.push_back((unsigned char) ((bits << 24) >> 24).to_ulong());
-		result.push_back((unsigned char) (length / 0x100));
-		result.push_back((unsigned char) (length % 0x100));
+		result.push_back((uint8_t) (bits >> 24).to_ulong());
+		result.push_back((uint8_t) ((bits << 8) >> 24).to_ulong());
+		result.push_back((uint8_t) ((bits << 16) >> 24).to_ulong());
+		result.push_back((uint8_t) ((bits << 24) >> 24).to_ulong());
+		result.push_back((uint8_t) (length / 0x100));
+		result.push_back((uint8_t) (length % 0x100));
 		return result;
 	}
 
 public:
-	void interpret(unsigned char* data) {
+	/** Interprets an input byte array as Primary Header.
+	 * @param[in] data a byte array that contains CCSDS SpacePacket Primary Header.
+	 */
+	void interpret(uint8_t* data) {
 		using namespace std;
-		packetVersionNum = bitset<3> ((data[0] & 0xe0) >> 5 /* 1110 0000 */);
-		packetType = bitset<1> ((data[0] & 0x10) >> 4 /* 0001 0000 */);
-		secondaryHeaderFlag = bitset<1> ((data[0] & 0x08) >> 3 /* 0000 1000 */);
+		packetVersionNum = bitset<3>((data[0] & 0xe0) >> 5 /* 1110 0000 */);
+		packetType = bitset<1>((data[0] & 0x10) >> 4 /* 0001 0000 */);
+		secondaryHeaderFlag = bitset<1>((data[0] & 0x08) >> 3 /* 0000 1000 */);
 		bitset<3> apid_msb3bits((data[0] & 0x07) >> 3);
 		bitset<8> apid_lsb8bits(data[1]);
-		for (unsigned int i = 0; i < 3; i++) {
+		for (size_t i = 0; i < 3; i++) {
 			apid.set(i + 8, apid_msb3bits[i]);
 		}
-		for (unsigned int i = 0; i < 8; i++) {
+		for (size_t i = 0; i < 8; i++) {
 			apid.set(i, apid_lsb8bits[i]);
 		}
 		/*
-		cout << "#data[1]=" << (uint32_t) data[1] << endl;
-		cout << "#apid_lsb8bits=" << apid_lsb8bits.to_string() << endl;
-		cout << "#apid         =" << apid.to_string() << endl;
-		cout << "#apid=" << (uint32_t) apid.to_ulong() << endl;
-		*/
-		sequenceFlag = bitset<2> ((data[2] & 0xc0) >> 6 /* 1100 0000 */);
+		 cout << "#data[1]=" << (uint32_t) data[1] << endl;
+		 cout << "#apid_lsb8bits=" << apid_lsb8bits.to_string() << endl;
+		 cout << "#apid         =" << apid.to_string() << endl;
+		 cout << "#apid=" << (uint32_t) apid.to_ulong() << endl;
+		 */
+		sequenceFlag = bitset<2>((data[2] & 0xc0) >> 6 /* 1100 0000 */);
 		bitset<6> sequenceCount_msb6bits(data[2] & 0x3F/* 0011 1111 */);
 		bitset<6> sequenceCount_lsb8bits(data[3]);
-		for (unsigned int i = 0; i < 6; i++) {
+		for (size_t i = 0; i < 6; i++) {
 			sequenceCount.set(i + 8, sequenceCount_msb6bits[i]);
 		}
-		for (unsigned int i = 0; i < 8; i++) {
+		for (size_t i = 0; i < 8; i++) {
 			sequenceCount.set(i, sequenceCount_lsb8bits[i]);
 		}
-		packetDataLength = bitset<16> (data[4] * 0x100 + data[5]);
+		packetDataLength = bitset<16>(data[4] * 0x100 + data[5]);
 	}
 
 public:
+	/** Returns APID as std::bitset<11>. */
 	std::bitset<11> getAPID() const {
 		return apid;
 	}
 
-	unsigned int getAPIDAsInteger() const {
+public:
+	/** Returns APDI as an integer. */
+	size_t getAPIDAsInteger() const {
 		return apid.to_ulong();
 	}
 
-	unsigned int getPacketDataLength() const {
+public:
+	/** Returns Packet Data Length.
+	 * @returns (Total number of bytes in the Packet Data field - 1).
+	 */
+	size_t getPacketDataLength() const {
 		return packetDataLength.to_ulong();
 	}
 
+public:
+	/** Returns Packet Type.
+	 * @retval 0 Command packet.
+	 * @retval 1 Telemetry Packet.
+	 */
 	std::bitset<1> getPacketType() const {
 		return packetType;
 	}
 
+public:
+	/** Returns Packet Version Number.
+	 * @retval 000 Version 1.
+	 */
 	std::bitset<3> getPacketVersionNum() const {
 		return packetVersionNum;
 	}
 
+public:
+	/** Returns Secondary Header Flag.
+	 * @returns Secondary Header Flag.
+	 * @retval 1 Secondary Header is present.
+	 * @retval 0 Secondary Header is not present.
+	 */
 	std::bitset<1> getSecondaryHeaderFlag() const {
 		return secondaryHeaderFlag;
 	}
 
+public:
+	/** Returns Packet Sequence Count. */
 	std::bitset<14> getSequenceCount() const {
 		return sequenceCount;
 	}
 
+public:
+	/** Returns Packet Sequence Flag.
+	 * @retval 00 Continuation segment of user data.
+	 * @retval 01 First segment of user data.
+	 * @retval 10 Last segment of user data.
+	 * @retval 11 Unsegmented user data.
+	 */
 	std::bitset<2> getSequenceFlag() const {
 		return sequenceFlag;
 	}
 
-	void setAPID(unsigned int apid) {
+public:
+	/** Sets APID from a uint16_t integer.
+	 * @param[in] apid APID.
+	 */
+	void setAPID(uint16_t apid) {
 		this->apid = std::bitset<11>(apid);
 	}
 
+public:
+	/** Sets Packet Data Length field.
+	 * @param packetDataLength Packet Data Length value.
+	 */
 	void setPacketDataLength(std::bitset<16> packetDataLength) {
 		this->packetDataLength = packetDataLength;
 	}
 
-	void setPacketDataLength(unsigned int packetDataLength) {
+public:
+	/** Sets Packet Data Length field.
+	 * @param packetDataLength Packet Data Length value.
+	 */
+	void setPacketDataLength(size_t packetDataLength) {
 		this->packetDataLength = std::bitset<16>(packetDataLength);
 	}
 
-	void setPacketType(unsigned int packetType) {
+public:
+	/** Sets Packet Type.
+	 * @param[in] packetType.
+	 * @attention packetType==0:Command packet.
+	 * @attention packetType==1:Telemetry Packet.
+	 */
+	void setPacketType(uint32_t packetType) {
 		this->packetType = std::bitset<1>(packetType);
 	}
 
 private:
+	/** Sets Packet Version Number.
+	 * @param[in] packetVersionNum 000 for Version 1.
+	 */
 	void setPacketVersionNum(std::bitset<3> packetVersionNum) {
 		this->packetVersionNum = packetVersionNum;
 	}
 
-	void setPacketVersionNum(unsigned int packetVersionNum) {
+public:
+	/** Sets Packet Version Number.
+	 * @param[in] packetVersionNum 000 for Version 1.
+	 */
+	void setPacketVersionNum(uint32_t packetVersionNum) {
 		this->packetVersionNum = std::bitset<3>(packetVersionNum);
 	}
 
 public:
+	/** Sets Secondary Header Flag.
+	 * @param[in] secondaryHeaderFlag Secondary Header Flag.
+	 * @attention secondaryHeaderFlag==0: Secondary Header is not present.
+	 * @attention secondaryHeaderFlag==1: Secondary Header is present.
+	 */
 	void setSecondaryHeaderFlag(std::bitset<1> secondaryHeaderFlag) {
 		this->secondaryHeaderFlag = secondaryHeaderFlag;
 	}
 
-	void setSecondaryHeaderFlag(unsigned int secondaryHeaderFlag) {
+public:
+	/** Sets Secondary Header Flag.
+	 * @param[in] secondaryHeaderFlag Secondary Header Flag.
+	 * @attention secondaryHeaderFlag==0: Secondary Header is not present.
+	 * @attention secondaryHeaderFlag==1: Secondary Header is present.
+	 */
+	void setSecondaryHeaderFlag(uint8_t secondaryHeaderFlag) {
 		this->secondaryHeaderFlag = std::bitset<1>(secondaryHeaderFlag);
 	}
 
+public:
+	/** Sets Packet Sequence Count.
+	 * @paarm[in] sequenceCount Packet Sequence Count.
+	 */
 	void setSequenceCount(std::bitset<14> sequenceCount) {
 		this->sequenceCount = sequenceCount;
 	}
 
-	void setSequenceCount(unsigned int sequenceCount) {
+public:
+	/** Sets Packet Sequence Count.
+	 * @paarm[in] sequenceCount Packet Sequence Count.
+	 */
+	void setSequenceCount(size_t sequenceCount) {
 		this->sequenceCount = std::bitset<14>(sequenceCount);
 	}
 
-	void setSequenceFlag(std::bitset<2> sequenceFlags) {
-		this->sequenceFlag = sequenceFlags;
-	}
-
-	void setSequenceFlag(unsigned int sequeceFlags) {
-		this->sequenceFlag = std::bitset<2>(sequeceFlags);
+public:
+	/** Sets Packet Sequence Flag.
+	 * @paarm[in] sequenceFlag Packet Sequence Flag.
+	 */
+	void setSequenceFlag(std::bitset<2> sequenceFlag) {
+		this->sequenceFlag = sequenceFlag;
 	}
 
 public:
+	/** Sets Packet Sequence Flag.
+	 * @paarm[in] sequenceFlag Packet Sequence Flag.
+	 */
+	void setSequenceFlag(uint32_t sequeceFlag) {
+		this->sequenceFlag = std::bitset<2>(sequeceFlag);
+	}
+
+public:
+	/** Converts an instance to string.
+	 * @returns string dump of this instance.
+	 */
 	virtual std::string toString() {
 		using namespace std;
 		std::stringstream ss;
@@ -239,7 +341,7 @@ public:
 		}
 		ss << "SequenceCount       : " << sequenceCount.to_ulong() << endl;
 		ss << "PacketDataLength    : " << packetDataLength.to_ulong();
-		ss << " (User data field has " << dec <<packetDataLength.to_ulong()+1 << " bytes)" << endl;
+		ss << " (User data field has " << dec << packetDataLength.to_ulong() + 1 << " bytes)" << endl;
 		return ss.str();
 	}
 };
