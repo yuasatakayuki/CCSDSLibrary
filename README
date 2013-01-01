@@ -8,6 +8,9 @@ For details of the CCSDS SpacePacket, please refer a pdf document available
 from the url below:
 http://public.ccsds.org/
 
+Github page is:
+https://github.com/yuasatakayuki/CCSDSLibrary
+
 
 ==Install==
 Download the archive or checkout the git repository, and place the "CCSDSLibrary"
@@ -23,5 +26,14 @@ compiling:
 g++ -I/usr/local/CCSDSLibrary/includes your_application.cc
 
 
+==Documentation==
+The documents/ folder contains a Doxygen file which can be used to
+generate an API reference in HTML and RTF.
+ cd SMCPLibrary/documents
+ doxygen Doxygen
+ open html/index.html
+
+
 ==History==
 20110612 first version (Takayuki Yuasa)
+20130101 Doxygen comments were added (Takayuki Yuasa)

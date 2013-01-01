@@ -15,6 +15,121 @@
 #include <iomanip>
 #include <sstream>
 
+/** @mainpage CCSDS SpacePacket Library
+ * @section intro Introduction
+ * CCSDS SpacePacket Library is a header-only C++ class library
+ * that manipulates packets in the CCSDS SpacePacket format.
+ * Secondary Header Part is implemented for JAXA/ISAS missions.
+ *
+ * Related libraries:
+ * - <a href="https://github.com/yuasatakayuki/SpaceWireRMAPLibrary">SpaceWire RMAP Library</a>
+ * - <a href="https://github.com/yuasatakayuki/SMCPLibrary">SMCP Library</a>
+ *
+ * @section install Installation and Build
+ * Git repository is hosted on the github.com.
+ * To install the latest source tree, execute git clone like below.
+ * @code
+ * git clone https://github.com/yuasatakayuki/CCSDSLibrary.git
+ * @endcode
+ *
+ * The library does not need to be pre-compiled since this consists
+ * only from header files. Just include CCSDSLibrary/includes/CCSDS.hh
+ * and provide a header search path to your compiler.
+ *
+ * For example, in a source file,
+ * @code
+ * #include "CCSDS.hh"
+ * ...your source...
+ * @endcode
+ * and compile it with a -I flag,
+ * @code
+ * g++ -I/path/to/CCSDSLibrary/includes your_application.cc -o your_application
+ * @endcode
+ *
+ * @section classes Classes
+ * Users mainly interface with instances of the CCSDSSpacePacket class.
+ * CCSDSSpacePacket internally contains
+ * - Primary Header (the CCSDSSpacePacketPrimaryHeader class)
+ * - Secondary Header (if used; the CCSDSSpacePacketSecondaryHeader class)
+ * - User Data Field (std::vector<uint8_t>)
+ *
+ * See <a href="annotated.html">Class List</a> for complete API reference.
+ *
+ * @section usage Example Usages
+ * @subsection example_creation Packet creation
+ * @code
+	//constructs an empty instance
+	CCSDSSpacePacket* ccsdsPacket = new CCSDSSpacePacket();
+
+	//set APID
+	ccsdsPacket->getPrimaryHeader()->setAPID(apid);
+
+	//set Packet Type (Telemetry or Command)
+	ccsdsPacket->getPrimaryHeader()->setPacketType(CCSDSSpacePacketPacketType::TelemetryPacket);
+
+	//set Secondary Header Flag (whether this packet has the Secondary Header part)
+	ccsdsPacket->getPrimaryHeader()->setSecondaryHeaderFlag(CCSDSSpacePacketSecondaryHeaderFlag::Present);
+
+	//set segmentation information
+	ccsdsPacket->getPrimaryHeader()->setSequenceFlag(CCSDSSpacePacketSequenceFlag::UnsegmentedUserData);
+
+	//set Category
+	ccsdsPacket->getSecondaryHeader()->setCategory(category);
+
+	//set secondary header type (whether ADU Channel presence)
+	ccsdsPacket->getSecondaryHeader()->
+	   setSecondaryHeaderType(CCSDSSpacePacketSecondaryHeaderType::ADUChannelIsUsed);
+
+	//set ADU Channel ID
+	ccsdsPacket->getSecondaryHeader()->setADUChannelID(0x00);
+
+	//set ADU Segmentation Flag (whether ADU is segmented)
+	ccsdsPacket->getSecondaryHeader()->setADUSegmentFlag(CCSDSSpacePacketADUSegmentFlag::UnsegmentedADU);
+
+	//set counters
+	ccsdsPacket->getPrimaryHeader()->setSequenceCount(sequenceCount);
+	ccsdsPacket->getSecondaryHeader()->setADUCount(aduCount);
+
+	//set absolute time
+	uint8_t time[4];
+	ccsdsPacket->getSecondaryHeader()->setTime(time);
+
+	//set data
+	ccsdsPacket->setUserDataField(smcpByteArray);
+	ccsdsPacket->setPacketDataLength();
+
+	//get packet as byte array
+	std::vector<uint8_t> packet = ccsdsPacket->getAsByteVector();
+ * @endcode
+ *
+ * @subsection example_interpretation Packet interpretation
+ * @code
+	//constructs an empty instance
+	CCSDSSpacePacket* ccsdsPacket = new CCSDSSpacePacket();
+
+	//interpret an input data as a CCSDS SpacePacket
+	ccsdsPacket->interpret(data,length);
+
+	//check if the packet has Secondary Header
+	if(ccsdsPacket->isSecondaryHeaderPresent()){
+		...
+	}
+
+	//get APID
+	std::cout << ccsdsPacket->getPrimaryHeader()->getAPIDAsInteger() << std::endl;
+
+	//dump packet content
+	std::cout << ccsdsPacket->toString() << std::endl;
+ * @endcode
+ *
+ * @section feedback Feedback
+ * Questions, comments, and requests are welcome.
+ * Raise them to
+ * <a href="https://github.com/yuasatakayuki/CCSDSLibrary">
+ * the CCSDS SpacePacket Library Github site</a>.
+ *
+ */
+
 /** A class that represents a CCSDS SpacePacket.
  * This class contains structured information of a packet:
  * - Primary Header,
@@ -98,7 +213,7 @@ public:
 public:
 	/** Returns packet content as a vector of uint8_t.
 	 * Packet content will be dynamically generated every time
-	 * when this method was invoked.
+	 * when this method is invoked.
 	 * @return a uint8_t vector that contains packet content
 	 */
 	std::vector<uint8_t> getAsByteVector() {
