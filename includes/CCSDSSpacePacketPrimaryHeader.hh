@@ -44,7 +44,7 @@ public:
 class CCSDSSpacePacketSequenceFlag {
 public:
 	enum {
-		ContinuationSegument = 0x00, //00b
+		ContinuationSegment = 0x00, //00b
 		TheFirstSegment = 0x01, //01b
 		TheLastSegment = 0x02, //10b
 		UnsegmentedUserData = 0x03, //11b
@@ -207,6 +207,43 @@ public:
 	 */
 	std::bitset<2> getSequenceFlag() const {
 		return sequenceFlag;
+	}
+
+public:
+	/** True if Packet is segmented.
+	 */
+	bool isSegmented() {
+		return (sequenceFlag.to_ulong() == CCSDSSpacePacketSequenceFlag::TheFirstSegment
+				|| sequenceFlag.to_ulong() == CCSDSSpacePacketSequenceFlag::TheLastSegment
+				|| sequenceFlag.to_ulong() == CCSDSSpacePacketSequenceFlag::ContinuationSegment) ? true : false;
+	}
+
+public:
+	/** True if Packet is the first segmented.
+	 */
+	bool isFirstSegment(){
+		return (sequenceFlag.to_ulong() == CCSDSSpacePacketSequenceFlag::TheFirstSegment) ? true : false;
+	}
+
+public:
+	/** True if Packet is the last segmented.
+	 */
+	bool isLastSegment(){
+		return (sequenceFlag.to_ulong() == CCSDSSpacePacketSequenceFlag::TheLastSegment) ? true : false;
+	}
+
+public:
+	/** True if Packet is a continuation segmented.
+	 */
+	bool isContinuationSegment(){
+		return (sequenceFlag.to_ulong() == CCSDSSpacePacketSequenceFlag::ContinuationSegment) ? true : false;
+	}
+
+public:
+	/** True if Packet is an unsegmented packet.
+	 */
+	bool isUnsegmented(){
+		return (sequenceFlag.to_ulong() == CCSDSSpacePacketSequenceFlag::UnsegmentedUserData) ? true : false;
 	}
 
 public:
