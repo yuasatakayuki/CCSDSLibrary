@@ -244,10 +244,17 @@ public:
 		}
 		//primary header
 		primaryHeader->interpret(buffer);
+		size_t packetDataLengthCorrected1=primaryHeader->getPacketDataLength()+1;
+		size_t totalPacketLength=packetDataLengthCorrected1+CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength;
+
+		if(length<totalPacketLength){
+			throw CCSDSSpacePacketException(CCSDSSpacePacketException::InconsistentPacketLength);
+		}
+
 		if (primaryHeader->getSecondaryHeaderFlag().to_ulong() == CCSDSSpacePacketSecondaryHeaderFlag::NotPresent) {
 			//buffer field
 			userDataField->clear();
-			for (size_t i = CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength; i < length; i++) {
+			for (size_t i = CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength; i < totalPacketLength; i++) {
 				userDataField->push_back(buffer[i]);
 			}
 		} else {
@@ -257,7 +264,7 @@ public:
 			//buffer field
 			userDataField->clear();
 			for (size_t i = CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength + secondaryHeader->getLength();
-					i < length; i++) {
+					i < totalPacketLength; i++) {
 				userDataField->push_back(buffer[i]);
 			}
 		}
