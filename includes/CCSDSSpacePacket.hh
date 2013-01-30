@@ -451,6 +451,14 @@ public:
 	inline CCSDSSpacePacketSecondaryHeader* getSecondaryHeader() const {
 		return secondaryHeader;
 	}
+
+public:
+	/** Returns a User Data Field pointer (std::vector<uint8_t>*).
+	 * @returns a pointer to the User Data Field of this packet.
+	 */
+	inline std::vector<uint8_t>* getUserDataField(){
+		return userDataField;
+	}
 };
 
 #endif /* CCSDSSPACEPACKET_HH_ */
