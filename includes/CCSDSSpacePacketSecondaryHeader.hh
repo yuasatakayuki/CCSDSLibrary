@@ -132,6 +132,13 @@ public:
 	}
 
 public:
+	/** True if ADU Channel is used.
+	 */
+	bool isADUChannelUsed() {
+		return (secondaryHeaderType.to_ulong() == CCSDSSpacePacketSecondaryHeaderType::ADUChannelIsUsed) ? true : false;
+	}
+
+public:
 	/** Returns ADU Channel ID.
 	 * @returns ADU Channel ID.
 	 */
@@ -313,6 +320,17 @@ public:
 	}
 
 public:
+	uint32_t getTimeAsInteger() {
+		uint64_t time_integer = 0;
+		uint64_t factor = 1;
+		for (int i = 0; i < 4; i++) {
+			time_integer += factor * time[3-i];
+			factor *= 0x100;
+		}
+		return time_integer;
+	}
+
+public:
 	/** Converts an instance to string.
 	 * @returns string dump of this instance.
 	 */
@@ -320,21 +338,22 @@ public:
 		using namespace std;
 		stringstream ss;
 
-		uint64_t time_integer = 0;
-		uint64_t factor = 1;
-		for (int i = 0; i < 4; i++) {
-			time_integer += factor * time[0];
-			factor *= 0x100;
-		}
+		uint32_t time_integer = getTimeAsInteger();
 
 		ss << "SecondaryHeader" << endl;
-		ss << "Time                : " << time_integer << endl;
+		ss << "Time                : " << time_integer << " (0x" << hex << right << setw(8) << setfill('0')
+				<< (uint32_t) time_integer << ")" << dec << endl;
 		ss << "SecondaryHeaderType : " << secondaryHeaderType.to_string() << endl;
 		ss << "Category            : " << category.to_string() << endl;
-		ss << "ADUCount            : " << (uint32_t) aduCount << endl;
-		ss << "ADUChannelID        : " << (uint32_t) aduChannelID << endl;
-		ss << "ADUSegmentFlag      : " << aduSegmentFlag.to_string() << endl;
-		ss << "ADUSegmentCount     : " << aduSegmentCount.to_ulong() << endl;
+		ss << "ADUCount            : " << dec << (uint32_t) aduCount << " (0x" << hex << right << setw(2)
+				<< setfill('0') << (uint32_t) aduCount << ")" << dec << endl;
+
+		if (isADUChannelUsed()) {
+			ss << "ADUChannelID        : " << (uint32_t) aduChannelID << endl;
+			ss << "ADUSegmentFlag      : " << dec << aduSegmentFlag.to_string() << endl;
+			ss << "ADUSegmentCount     : " << dec << aduSegmentCount.to_ulong() << "(0x" << hex << right << setw(4)
+					<< setfill('0') << aduSegmentCount.to_ulong() << ")" << hex << endl;
+		}
 		return ss.str();
 	}
 

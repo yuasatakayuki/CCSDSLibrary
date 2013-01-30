@@ -329,7 +329,7 @@ public:
 		ss << "---------------------------------" << endl;
 		ss << primaryHeader->toString();
 		if (primaryHeader->getSecondaryHeaderFlag().to_ulong() == CCSDSSpacePacketSecondaryHeaderFlag::Present) {
-			secondaryHeader->toString();
+			ss << secondaryHeader->toString();
 		} else {
 			ss << "No secondary header" << endl;
 		}
