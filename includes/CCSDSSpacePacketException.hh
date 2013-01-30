@@ -16,7 +16,7 @@ public:
 	enum {
 		NotACCSDSSpacePacket = 0x01, //
 		SecondaryHeaderTooShort = 0x10,
-
+		InconsistentPacketLength
 	};
 public:
 	uint32_t status;
