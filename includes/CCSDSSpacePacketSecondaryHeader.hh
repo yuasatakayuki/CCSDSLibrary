@@ -340,7 +340,7 @@ public:
 
 		uint32_t time_integer = getTimeAsInteger();
 
-		ss << "SecondaryHeader" << endl;
+		ss << "SecondaryHeader (" << dec << this->getLength() << " bytes)" << endl;
 		ss << "Time                : " << time_integer << " (0x" << hex << right << setw(8) << setfill('0')
 				<< (uint32_t) time_integer << ")" << dec << endl;
 		ss << "SecondaryHeaderType : " << secondaryHeaderType.to_string() << endl;

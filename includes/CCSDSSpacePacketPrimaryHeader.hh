@@ -378,7 +378,7 @@ public:
 		}
 		ss << "SequenceCount       : " << sequenceCount.to_ulong() << endl;
 		ss << "PacketDataLength    : " << dec << packetDataLength.to_ulong() << " (0x" << hex << right << setw(4) << setfill('0')  << packetDataLength.to_ulong()<<")" ;
-		ss << " (User data field has " << dec << packetDataLength.to_ulong() + 1 << " bytes)" << endl;
+		ss << " (Packet Data Field has " << dec << packetDataLength.to_ulong() + 1 << " bytes)" << endl;
 		return ss.str();
 	}
 };
