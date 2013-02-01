@@ -119,8 +119,8 @@ public:
 			aduChannelID = data[6];
 			aduSegmentFlag = bitset<2>((data[7] & 0xc0) >> 6 /* 1100 0000 */);
 
-			aduSegmentCount_msb6bits = bitset<8>(data[7] & 0x3F/* 0011 1111 */);
-			aduSegmentCount_lsb8bits = bitset<6>(data[8]);
+			aduSegmentCount_msb6bits = bitset<6>(data[7] & 0x3F/* 0011 1111 */);
+			aduSegmentCount_lsb8bits = bitset<8>(data[8]);
 			aduSegmentCount = bitset<14>();
 			for (size_t i = 0; i < 8; i++) {
 				aduSegmentCount.set(i, aduSegmentCount_lsb8bits[i]);
