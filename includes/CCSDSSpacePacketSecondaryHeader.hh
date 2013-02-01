@@ -357,6 +357,20 @@ public:
 		return ss.str();
 	}
 
+public:
+	bool isADUContinuationSegment(){
+		return aduSegmentFlag.to_ulong()==0x00;
+	}
+	bool isADUFirstSegment(){
+		return aduSegmentFlag.to_ulong()==0x01;
+	}
+	bool isADULastSegment(){
+		return aduSegmentFlag.to_ulong()==0x10;
+	}
+	bool isADUUnSegmented(){
+		return aduSegmentFlag.to_ulong()==0x11;
+	}
+
 };
 
 #endif /* CCSDSSPACEPACKETSECONDARYHEADER_HH_ */
