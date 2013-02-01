@@ -122,11 +122,11 @@ public:
 			aduSegmentCount_msb6bits = bitset<6>(data[7] & 0x3F/* 0011 1111 */);
 			aduSegmentCount_lsb8bits = bitset<6>(data[8]);
 			aduSegmentCount = bitset<14>();
-			for (size_t i = 0; i < 6; i++) {
-				aduSegmentCount.set(i, aduSegmentCount_msb6bits[i]);
-			}
 			for (size_t i = 0; i < 8; i++) {
-				aduSegmentCount.set(i + 6, aduSegmentCount_lsb8bits[i]);
+				aduSegmentCount.set(i, aduSegmentCount_lsb8bits[i]);
+			}
+			for (size_t i = 0; i < 6; i++) {
+				aduSegmentCount.set(i + 8, aduSegmentCount_msb6bits[i]);
 			}
 		}
 	}
@@ -324,7 +324,7 @@ public:
 		uint64_t time_integer = 0;
 		uint64_t factor = 1;
 		for (int i = 0; i < 4; i++) {
-			time_integer += factor * time[3-i];
+			time_integer += factor * time[3 - i];
 			factor *= 0x100;
 		}
 		return time_integer;
