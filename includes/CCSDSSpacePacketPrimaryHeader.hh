@@ -147,13 +147,13 @@ public:
 
 public:
 	/** Returns APID as std::bitset<11>. */
-	std::bitset<11> getAPID() const {
+	inline std::bitset<11> getAPID() const {
 		return apid;
 	}
 
 public:
 	/** Returns APDI as an integer. */
-	size_t getAPIDAsInteger() const {
+	inline size_t getAPIDAsInteger() const {
 		return apid.to_ulong();
 	}
 
@@ -161,7 +161,7 @@ public:
 	/** Returns Packet Data Length.
 	 * @returns (Total number of bytes in the Packet Data field - 1).
 	 */
-	size_t getPacketDataLength() const {
+	inline size_t getPacketDataLength() const {
 		return packetDataLength.to_ulong();
 	}
 
@@ -170,7 +170,7 @@ public:
 	 * @retval 0 Command packet.
 	 * @retval 1 Telemetry Packet.
 	 */
-	std::bitset<1> getPacketType() const {
+	inline std::bitset<1> getPacketType() const {
 		return packetType;
 	}
 
@@ -178,7 +178,7 @@ public:
 	/** Returns Packet Version Number.
 	 * @retval 000 Version 1.
 	 */
-	std::bitset<3> getPacketVersionNum() const {
+	inline std::bitset<3> getPacketVersionNum() const {
 		return packetVersionNum;
 	}
 
@@ -188,13 +188,13 @@ public:
 	 * @retval 1 Secondary Header is present.
 	 * @retval 0 Secondary Header is not present.
 	 */
-	std::bitset<1> getSecondaryHeaderFlag() const {
+	inline std::bitset<1> getSecondaryHeaderFlag() const {
 		return secondaryHeaderFlag;
 	}
 
 public:
 	/** Returns Packet Sequence Count. */
-	std::bitset<14> getSequenceCount() const {
+	inline std::bitset<14> getSequenceCount() const {
 		return sequenceCount;
 	}
 
@@ -205,14 +205,14 @@ public:
 	 * @retval 10 Last segment of user data.
 	 * @retval 11 Unsegmented user data.
 	 */
-	std::bitset<2> getSequenceFlag() const {
+	inline std::bitset<2> getSequenceFlag() const {
 		return sequenceFlag;
 	}
 
 public:
 	/** True if Packet is segmented.
 	 */
-	bool isSegmented() {
+	inline bool isSegmented() {
 		return (sequenceFlag.to_ulong() == CCSDSSpacePacketSequenceFlag::TheFirstSegment
 				|| sequenceFlag.to_ulong() == CCSDSSpacePacketSequenceFlag::TheLastSegment
 				|| sequenceFlag.to_ulong() == CCSDSSpacePacketSequenceFlag::ContinuationSegment) ? true : false;
@@ -221,28 +221,28 @@ public:
 public:
 	/** True if Packet is the first segmented.
 	 */
-	bool isFirstSegment(){
+	inline bool isFirstSegment(){
 		return (sequenceFlag.to_ulong() == CCSDSSpacePacketSequenceFlag::TheFirstSegment) ? true : false;
 	}
 
 public:
 	/** True if Packet is the last segmented.
 	 */
-	bool isLastSegment(){
+	inline bool isLastSegment(){
 		return (sequenceFlag.to_ulong() == CCSDSSpacePacketSequenceFlag::TheLastSegment) ? true : false;
 	}
 
 public:
 	/** True if Packet is a continuation segmented.
 	 */
-	bool isContinuationSegment(){
+	inline bool isContinuationSegment(){
 		return (sequenceFlag.to_ulong() == CCSDSSpacePacketSequenceFlag::ContinuationSegment) ? true : false;
 	}
 
 public:
 	/** True if Packet is an unsegmented packet.
 	 */
-	bool isUnsegmented(){
+	inline bool isUnsegmented(){
 		return (sequenceFlag.to_ulong() == CCSDSSpacePacketSequenceFlag::UnsegmentedUserData) ? true : false;
 	}
 
@@ -250,7 +250,7 @@ public:
 	/** Sets APID from a uint16_t integer.
 	 * @param[in] apid APID.
 	 */
-	void setAPID(uint16_t apid) {
+	inline void setAPID(uint16_t apid) {
 		this->apid = std::bitset<11>(apid);
 	}
 
@@ -258,7 +258,7 @@ public:
 	/** Sets Packet Data Length field.
 	 * @param packetDataLength Packet Data Length value.
 	 */
-	void setPacketDataLength(std::bitset<16> packetDataLength) {
+	inline void setPacketDataLength(std::bitset<16> packetDataLength) {
 		this->packetDataLength = packetDataLength;
 	}
 
@@ -266,7 +266,7 @@ public:
 	/** Sets Packet Data Length field.
 	 * @param packetDataLength Packet Data Length value.
 	 */
-	void setPacketDataLength(size_t packetDataLength) {
+	inline void setPacketDataLength(size_t packetDataLength) {
 		this->packetDataLength = std::bitset<16>(packetDataLength);
 	}
 
@@ -276,7 +276,7 @@ public:
 	 * @attention packetType==0:Command packet.
 	 * @attention packetType==1:Telemetry Packet.
 	 */
-	void setPacketType(uint32_t packetType) {
+	inline void setPacketType(uint32_t packetType) {
 		this->packetType = std::bitset<1>(packetType);
 	}
 
@@ -284,7 +284,7 @@ private:
 	/** Sets Packet Version Number.
 	 * @param[in] packetVersionNum 000 for Version 1.
 	 */
-	void setPacketVersionNum(std::bitset<3> packetVersionNum) {
+	inline void setPacketVersionNum(std::bitset<3> packetVersionNum) {
 		this->packetVersionNum = packetVersionNum;
 	}
 
@@ -292,7 +292,7 @@ public:
 	/** Sets Packet Version Number.
 	 * @param[in] packetVersionNum 000 for Version 1.
 	 */
-	void setPacketVersionNum(uint32_t packetVersionNum) {
+	inline void setPacketVersionNum(uint32_t packetVersionNum) {
 		this->packetVersionNum = std::bitset<3>(packetVersionNum);
 	}
 
@@ -302,7 +302,7 @@ public:
 	 * @attention secondaryHeaderFlag==0: Secondary Header is not present.
 	 * @attention secondaryHeaderFlag==1: Secondary Header is present.
 	 */
-	void setSecondaryHeaderFlag(std::bitset<1> secondaryHeaderFlag) {
+	inline void setSecondaryHeaderFlag(std::bitset<1> secondaryHeaderFlag) {
 		this->secondaryHeaderFlag = secondaryHeaderFlag;
 	}
 
@@ -312,7 +312,7 @@ public:
 	 * @attention secondaryHeaderFlag==0: Secondary Header is not present.
 	 * @attention secondaryHeaderFlag==1: Secondary Header is present.
 	 */
-	void setSecondaryHeaderFlag(uint8_t secondaryHeaderFlag) {
+	inline void setSecondaryHeaderFlag(uint8_t secondaryHeaderFlag) {
 		this->secondaryHeaderFlag = std::bitset<1>(secondaryHeaderFlag);
 	}
 
@@ -320,7 +320,7 @@ public:
 	/** Sets Packet Sequence Count.
 	 * @paarm[in] sequenceCount Packet Sequence Count.
 	 */
-	void setSequenceCount(std::bitset<14> sequenceCount) {
+	inline void setSequenceCount(std::bitset<14> sequenceCount) {
 		this->sequenceCount = sequenceCount;
 	}
 
@@ -328,7 +328,7 @@ public:
 	/** Sets Packet Sequence Count.
 	 * @paarm[in] sequenceCount Packet Sequence Count.
 	 */
-	void setSequenceCount(size_t sequenceCount) {
+	inline void setSequenceCount(size_t sequenceCount) {
 		this->sequenceCount = std::bitset<14>(sequenceCount);
 	}
 
@@ -336,7 +336,7 @@ public:
 	/** Sets Packet Sequence Flag.
 	 * @paarm[in] sequenceFlag Packet Sequence Flag.
 	 */
-	void setSequenceFlag(std::bitset<2> sequenceFlag) {
+	inline void setSequenceFlag(std::bitset<2> sequenceFlag) {
 		this->sequenceFlag = sequenceFlag;
 	}
 
@@ -344,7 +344,7 @@ public:
 	/** Sets Packet Sequence Flag.
 	 * @paarm[in] sequenceFlag Packet Sequence Flag.
 	 */
-	void setSequenceFlag(uint32_t sequeceFlag) {
+	inline void setSequenceFlag(uint32_t sequeceFlag) {
 		this->sequenceFlag = std::bitset<2>(sequeceFlag);
 	}
 
