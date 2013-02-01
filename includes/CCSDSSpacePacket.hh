@@ -58,68 +58,68 @@
  * @section usage Example Usages
  * @subsection example_creation Packet creation
  * @code
-	//constructs an empty instance
-	CCSDSSpacePacket* ccsdsPacket = new CCSDSSpacePacket();
+ //constructs an empty instance
+ CCSDSSpacePacket* ccsdsPacket = new CCSDSSpacePacket();
 
-	//set APID
-	ccsdsPacket->getPrimaryHeader()->setAPID(apid);
+ //set APID
+ ccsdsPacket->getPrimaryHeader()->setAPID(apid);
 
-	//set Packet Type (Telemetry or Command)
-	ccsdsPacket->getPrimaryHeader()->setPacketType(CCSDSSpacePacketPacketType::TelemetryPacket);
+ //set Packet Type (Telemetry or Command)
+ ccsdsPacket->getPrimaryHeader()->setPacketType(CCSDSSpacePacketPacketType::TelemetryPacket);
 
-	//set Secondary Header Flag (whether this packet has the Secondary Header part)
-	ccsdsPacket->getPrimaryHeader()->setSecondaryHeaderFlag(CCSDSSpacePacketSecondaryHeaderFlag::Present);
+ //set Secondary Header Flag (whether this packet has the Secondary Header part)
+ ccsdsPacket->getPrimaryHeader()->setSecondaryHeaderFlag(CCSDSSpacePacketSecondaryHeaderFlag::Present);
 
-	//set segmentation information
-	ccsdsPacket->getPrimaryHeader()->setSequenceFlag(CCSDSSpacePacketSequenceFlag::UnsegmentedUserData);
+ //set segmentation information
+ ccsdsPacket->getPrimaryHeader()->setSequenceFlag(CCSDSSpacePacketSequenceFlag::UnsegmentedUserData);
 
-	//set Category
-	ccsdsPacket->getSecondaryHeader()->setCategory(category);
+ //set Category
+ ccsdsPacket->getSecondaryHeader()->setCategory(category);
 
-	//set secondary header type (whether ADU Channel presence)
-	ccsdsPacket->getSecondaryHeader()->
-	   setSecondaryHeaderType(CCSDSSpacePacketSecondaryHeaderType::ADUChannelIsUsed);
+ //set secondary header type (whether ADU Channel presence)
+ ccsdsPacket->getSecondaryHeader()->
+ setSecondaryHeaderType(CCSDSSpacePacketSecondaryHeaderType::ADUChannelIsUsed);
 
-	//set ADU Channel ID
-	ccsdsPacket->getSecondaryHeader()->setADUChannelID(0x00);
+ //set ADU Channel ID
+ ccsdsPacket->getSecondaryHeader()->setADUChannelID(0x00);
 
-	//set ADU Segmentation Flag (whether ADU is segmented)
-	ccsdsPacket->getSecondaryHeader()->setADUSegmentFlag(CCSDSSpacePacketADUSegmentFlag::UnsegmentedADU);
+ //set ADU Segmentation Flag (whether ADU is segmented)
+ ccsdsPacket->getSecondaryHeader()->setADUSegmentFlag(CCSDSSpacePacketADUSegmentFlag::UnsegmentedADU);
 
-	//set counters
-	ccsdsPacket->getPrimaryHeader()->setSequenceCount(sequenceCount);
-	ccsdsPacket->getSecondaryHeader()->setADUCount(aduCount);
+ //set counters
+ ccsdsPacket->getPrimaryHeader()->setSequenceCount(sequenceCount);
+ ccsdsPacket->getSecondaryHeader()->setADUCount(aduCount);
 
-	//set absolute time
-	uint8_t time[4];
-	ccsdsPacket->getSecondaryHeader()->setTime(time);
+ //set absolute time
+ uint8_t time[4];
+ ccsdsPacket->getSecondaryHeader()->setTime(time);
 
-	//set data
-	ccsdsPacket->setUserDataField(smcpByteArray);
-	ccsdsPacket->setPacketDataLength();
+ //set data
+ ccsdsPacket->setUserDataField(smcpByteArray);
+ ccsdsPacket->setPacketDataLength();
 
-	//get packet as byte array
-	std::vector<uint8_t> packet = ccsdsPacket->getAsByteVector();
+ //get packet as byte array
+ std::vector<uint8_t> packet = ccsdsPacket->getAsByteVector();
  * @endcode
  *
  * @subsection example_interpretation Packet interpretation
  * @code
-	//constructs an empty instance
-	CCSDSSpacePacket* ccsdsPacket = new CCSDSSpacePacket();
+ //constructs an empty instance
+ CCSDSSpacePacket* ccsdsPacket = new CCSDSSpacePacket();
 
-	//interpret an input data as a CCSDS SpacePacket
-	ccsdsPacket->interpret(data,length);
+ //interpret an input data as a CCSDS SpacePacket
+ ccsdsPacket->interpret(data,length);
 
-	//check if the packet has Secondary Header
-	if(ccsdsPacket->isSecondaryHeaderPresent()){
-		...
-	}
+ //check if the packet has Secondary Header
+ if(ccsdsPacket->isSecondaryHeaderPresent()){
+ ...
+ }
 
-	//get APID
-	std::cout << ccsdsPacket->getPrimaryHeader()->getAPIDAsInteger() << std::endl;
+ //get APID
+ std::cout << ccsdsPacket->getPrimaryHeader()->getAPIDAsInteger() << std::endl;
 
-	//dump packet content
-	std::cout << ccsdsPacket->toString() << std::endl;
+ //dump packet content
+ std::cout << ccsdsPacket->toString() << std::endl;
  * @endcode
  *
  * @section feedback Feedback
@@ -143,37 +143,37 @@
  * @par
  * Example: Packet creation
  * @code
-	CCSDSSpacePacket* ccsdsPacket = new CCSDSSpacePacket();
-	ccsdsPacket->getPrimaryHeader()->setAPID(lowerAPID);
-	ccsdsPacket->getPrimaryHeader()->setPacketType(CCSDSSpacePacketPacketType::TelemetryPacket);
-	ccsdsPacket->getPrimaryHeader()->setSecondaryHeaderFlag(CCSDSSpacePacketSecondaryHeaderFlag::Present);
-	ccsdsPacket->getPrimaryHeader()->setSequenceFlag(CCSDSSpacePacketSequenceFlag::UnsegmentedUserData);
-	ccsdsPacket->getSecondaryHeader()->setCategory(category);
-	ccsdsPacket->getSecondaryHeader()->
-	   setSecondaryHeaderType(CCSDSSpacePacketSecondaryHeaderType::ADUChannelIsUsed);
-	ccsdsPacket->getSecondaryHeader()->setADUChannelID(0x00);
-	ccsdsPacket->getSecondaryHeader()->setADUSegmentFlag(CCSDSSpacePacketADUSegmentFlag::UnsegmentedADU);
-	//set counters
-	ccsdsPacket->getPrimaryHeader()->setSequenceCount(sequenceCount);
-	ccsdsPacket->getSecondaryHeader()->setADUCount(aduCount);
+ CCSDSSpacePacket* ccsdsPacket = new CCSDSSpacePacket();
+ ccsdsPacket->getPrimaryHeader()->setAPID(lowerAPID);
+ ccsdsPacket->getPrimaryHeader()->setPacketType(CCSDSSpacePacketPacketType::TelemetryPacket);
+ ccsdsPacket->getPrimaryHeader()->setSecondaryHeaderFlag(CCSDSSpacePacketSecondaryHeaderFlag::Present);
+ ccsdsPacket->getPrimaryHeader()->setSequenceFlag(CCSDSSpacePacketSequenceFlag::UnsegmentedUserData);
+ ccsdsPacket->getSecondaryHeader()->setCategory(category);
+ ccsdsPacket->getSecondaryHeader()->
+ setSecondaryHeaderType(CCSDSSpacePacketSecondaryHeaderType::ADUChannelIsUsed);
+ ccsdsPacket->getSecondaryHeader()->setADUChannelID(0x00);
+ ccsdsPacket->getSecondaryHeader()->setADUSegmentFlag(CCSDSSpacePacketADUSegmentFlag::UnsegmentedADU);
+ //set counters
+ ccsdsPacket->getPrimaryHeader()->setSequenceCount(sequenceCount);
+ ccsdsPacket->getSecondaryHeader()->setADUCount(aduCount);
 
-	//set absolute time
-	uint8_t time[4];
-	ccsdsPacket->getSecondaryHeader()->setTime(time);
+ //set absolute time
+ uint8_t time[4];
+ ccsdsPacket->getSecondaryHeader()->setTime(time);
 
-	//set data
-	ccsdsPacket->setUserDataField(smcpByteArray);
-	ccsdsPacket->setPacketDataLength();
+ //set data
+ ccsdsPacket->setUserDataField(smcpByteArray);
+ ccsdsPacket->setPacketDataLength();
 
-	//get packet as byte array
-	std::vector<uint8_t> packet = ccsdsPacket->getAsByteVector();
+ //get packet as byte array
+ std::vector<uint8_t> packet = ccsdsPacket->getAsByteVector();
  * @endcode
  *
  * Example: Packet interpretation
  * @code
-	CCSDSSpacePacket* ccsdsPacket = new CCSDSSpacePacket();
-	ccsdsPacket->interpret(data,length);
-	std::cout << ccsdsPacket->toString() << std::endl;
+ CCSDSSpacePacket* ccsdsPacket = new CCSDSSpacePacket();
+ ccsdsPacket->interpret(data,length);
+ std::cout << ccsdsPacket->toString() << std::endl;
  * @endcode
  *
  * @see CCSDSSpacePacketPrimaryHeader, CCSDSSpacePacketSecondaryHeader
@@ -244,10 +244,10 @@ public:
 		}
 		//primary header
 		primaryHeader->interpret(buffer);
-		size_t packetDataLengthCorrected1=primaryHeader->getPacketDataLength()+1;
-		size_t totalPacketLength=packetDataLengthCorrected1+CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength;
+		size_t packetDataLengthCorrected1 = primaryHeader->getPacketDataLength() + 1;
+		size_t totalPacketLength = packetDataLengthCorrected1 + CCSDSSpacePacketPrimaryHeader::PrimaryHeaderLength;
 
-		if(length<totalPacketLength){
+		if (length < totalPacketLength) {
 			throw CCSDSSpacePacketException(CCSDSSpacePacketException::InconsistentPacketLength);
 		}
 
@@ -287,7 +287,7 @@ public:
 	 */
 	void interpret(std::vector<uint8_t>* buffer) {
 		if (buffer->size() != 0) {
-			interpret(&( (*buffer)[0]), buffer->size());
+			interpret(&((*buffer)[0]), buffer->size());
 		}
 	}
 
@@ -382,8 +382,7 @@ public:
 	/** A utility method which converts std::vector<uint8_t> to
 	 * std::string.
 	 */
-	static std::string arrayToString(std::vector<uint8_t> *data, std::string mode = "dec",
-			int maxBytesToBeDumped = 8) {
+	static std::string arrayToString(std::vector<uint8_t> *data, std::string mode = "dec", int maxBytesToBeDumped = 8) {
 		//copied from CxxUtilities::Array
 		using namespace std;
 
@@ -421,10 +420,10 @@ public:
 public:
 	/** Checks if Secondary Header is present.
 	 */
-	inline bool isSecondaryHeaderPresent(){
-		if(primaryHeader->getSecondaryHeaderFlag().to_ulong() == CCSDSSpacePacketSecondaryHeaderFlag::Present){
+	inline bool isSecondaryHeaderPresent() {
+		if (primaryHeader->getSecondaryHeaderFlag().to_ulong() == CCSDSSpacePacketSecondaryHeaderFlag::Present) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
@@ -432,14 +431,14 @@ public:
 public:
 	/** Checks if Secondary Header is present.
 	 */
-	inline bool hasSecondaryHeader(){
+	inline bool hasSecondaryHeader() {
 		return isSecondaryHeaderPresent();
 	}
 
 public:
 	/** Checks if Secondary Header is present.
 	 */
-	inline bool isSecondaryHeaderUsed(){
+	inline bool isSecondaryHeaderUsed() {
 		return isSecondaryHeaderPresent();
 	}
 
@@ -463,9 +462,45 @@ public:
 	/** Returns a User Data Field pointer (std::vector<uint8_t>*).
 	 * @returns a pointer to the User Data Field of this packet.
 	 */
-	inline std::vector<uint8_t>* getUserDataField(){
+	inline std::vector<uint8_t>* getUserDataField() {
 		return userDataField;
 	}
+
+public:
+	/** True if Packet is segmented.
+	 */
+	inline bool isSegmented() {
+		return primaryHeader->isSegmented();
+	}
+
+public:
+	/** True if Packet is the first segmented.
+	 */
+	inline bool isFirstSegment() {
+		return primaryHeader->isFirstSegment();
+	}
+
+public:
+	/** True if Packet is the last segmented.
+	 */
+	inline bool isLastSegment() {
+		return primaryHeader->isLastSegment();
+	}
+
+public:
+	/** True if Packet is a continuation segmented.
+	 */
+	inline bool isContinuationSegment() {
+		return primaryHeader->isContinuationSegment();
+	}
+
+public:
+	/** True if Packet is an unsegmented packet.
+	 */
+	inline bool isUnsegmented() {
+		return primaryHeader->isUnsegmented();
+	}
+
 };
 
 #endif /* CCSDSSPACEPACKET_HH_ */
