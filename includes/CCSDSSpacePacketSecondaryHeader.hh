@@ -358,16 +358,30 @@ public:
 	}
 
 public:
+	/** True if this instance is a continuation ADU segment.
+	 */
 	bool isADUContinuationSegment(){
 		return aduSegmentFlag.to_ulong()==0x00;
 	}
+
+public:
+	/** True if this instance is the first ADU segment.
+	 */
 	bool isADUFirstSegment(){
 		return aduSegmentFlag.to_ulong()==0x01;
 	}
+
+public:
+	/** True if this instance is the last ADU segment.
+	 */
 	bool isADULastSegment(){
 		return aduSegmentFlag.to_ulong()==0x10;
 	}
-	bool isADUUnSegmented(){
+
+public:
+	/** True if this instance is an unsegmented ADU.
+	 */
+	bool isADUUnsegmented(){
 		return aduSegmentFlag.to_ulong()==0x11;
 	}
 
