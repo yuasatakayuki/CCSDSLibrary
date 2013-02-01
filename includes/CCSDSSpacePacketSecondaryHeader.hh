@@ -110,7 +110,7 @@ public:
 		secondaryHeaderType = bitset<1>((data[4] & 0x80) >> 7 /* 1000 0000 */);
 		category = bitset<7>(data[4] & 0x3F/* 0111 1111 */);
 		aduCount = data[5];
-		bitset<6> aduSegmentCount_lsb8bits;
+		bitset<8> aduSegmentCount_lsb8bits;
 		bitset<6> aduSegmentCount_msb6bits;
 		if (secondaryHeaderType.to_ulong() == CCSDSSpacePacketSecondaryHeaderType::ADUChannelIsUsed) {
 			if (length < 9) {
@@ -119,7 +119,7 @@ public:
 			aduChannelID = data[6];
 			aduSegmentFlag = bitset<2>((data[7] & 0xc0) >> 6 /* 1100 0000 */);
 
-			aduSegmentCount_msb6bits = bitset<6>(data[7] & 0x3F/* 0011 1111 */);
+			aduSegmentCount_msb6bits = bitset<8>(data[7] & 0x3F/* 0011 1111 */);
 			aduSegmentCount_lsb8bits = bitset<6>(data[8]);
 			aduSegmentCount = bitset<14>();
 			for (size_t i = 0; i < 8; i++) {
