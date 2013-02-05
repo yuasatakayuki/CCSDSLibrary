@@ -119,7 +119,7 @@ public:
 		packetVersionNum = bitset<3>((data[0] & 0xe0) >> 5 /* 1110 0000 */);
 		packetType = bitset<1>((data[0] & 0x10) >> 4 /* 0001 0000 */);
 		secondaryHeaderFlag = bitset<1>((data[0] & 0x08) >> 3 /* 0000 1000 */);
-		bitset<3> apid_msb3bits((data[0] & 0x07) >> 3);
+		bitset<3> apid_msb3bits(data[0] & 0x07);
 		bitset<8> apid_lsb8bits(data[1]);
 		for (size_t i = 0; i < 3; i++) {
 			apid.set(i + 8, apid_msb3bits[i]);
