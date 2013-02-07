@@ -236,7 +236,7 @@ public:
 	 * @param[in] buffer a pointer to a uint8_t array that contains a CCSDS SpacePacket.
 	 * @param[in] length the length of the data contained in buffer.
 	 */
-	void interpret(uint8_t *buffer, size_t length) throw (CCSDSSpacePacketException) {
+	void interpret(const uint8_t *buffer, size_t length) throw (CCSDSSpacePacketException) {
 		using namespace std;
 
 		if (length < 6) {
@@ -275,7 +275,7 @@ public:
 	/** Interprets data contained in a uint8_t vector into this instance.
 	 * @param[in] buffer a uint8_t vector that contains a CCSDS SpacePacket.
 	 */
-	void interpret(std::vector<uint8_t> & buffer) {
+	void interpret(const std::vector<uint8_t> & buffer) {
 		if (buffer.size() != 0) {
 			interpret(&(buffer[0]), buffer.size());
 		}
@@ -285,7 +285,7 @@ public:
 	/** Interprets data contained in a uint8_t vector into this instance.
 	 * @param[in] buffer a pointer to a uint8_t vector that contains a CCSDS SpacePacket.
 	 */
-	void interpret(std::vector<uint8_t>* buffer) {
+	void interpret(const std::vector<uint8_t>* buffer) {
 		if (buffer->size() != 0) {
 			interpret(&((*buffer)[0]), buffer->size());
 		}
@@ -311,7 +311,7 @@ public:
 public:
 	/** Sets uint8_t array to User Data Field.
 	 */
-	void setUserDataField(std::vector<uint8_t> *userDataField) {
+	void setUserDataField(const std::vector<uint8_t> *userDataField) {
 		*(this->userDataField) = *userDataField;
 		setPacketDataLength();
 	}
@@ -319,7 +319,7 @@ public:
 public:
 	/** Sets uint8_t array to User Data Field.
 	 */
-	void setUserDataField(std::vector<uint8_t> userDataField) {
+	void setUserDataField(const std::vector<uint8_t> userDataField) {
 		*(this->userDataField) = userDataField;
 		setPacketDataLength();
 	}

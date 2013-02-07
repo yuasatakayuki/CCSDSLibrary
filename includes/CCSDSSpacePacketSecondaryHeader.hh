@@ -98,7 +98,7 @@ public:
 	 * @param[in] data a byte array that contains CCSDS SpacePacket Secondary Header.
 	 * @param[in] length of the byte array.
 	 */
-	void interpret(uint8_t* data, size_t length) throw (CCSDSSpacePacketException) {
+	void interpret(const uint8_t* data, size_t length) throw (CCSDSSpacePacketException) {
 		using namespace std;
 		if (length < 6) {
 			throw CCSDSSpacePacketException(CCSDSSpacePacketException::SecondaryHeaderTooShort);
@@ -302,7 +302,7 @@ public:
 	/** Sets the Time field.
 	 * @param[in] time 32-bit Time field value.
 	 */
-	void setTime(uint8_t* time) {
+	void setTime(const uint8_t* time) {
 		for (size_t i = 0; i < 4; i++) {
 			this->time[i] = time[i];
 		}

@@ -114,7 +114,7 @@ public:
 	/** Interprets an input byte array as Primary Header.
 	 * @param[in] data a byte array that contains CCSDS SpacePacket Primary Header.
 	 */
-	void interpret(uint8_t* data) {
+	void interpret(const uint8_t* data) {
 		using namespace std;
 		packetVersionNum = bitset<3>((data[0] & 0xe0) >> 5 /* 1110 0000 */);
 		packetType = bitset<1>((data[0] & 0x10) >> 4 /* 0001 0000 */);
