@@ -14,6 +14,12 @@
 #include <iomanip>
 #include <iostream>
 
+#if (defined(__GXX_EXPERIMENTAL_CXX0X) || (__cplusplus >= 201103L))
+#include <cstdint>
+#else
+#include <stdint.h>
+#endif
+
 class CCSDSSpacePacketPacketVersionNumber {
 public:
 	enum {
