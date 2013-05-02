@@ -15,6 +15,12 @@
 #include <iomanip>
 #include <sstream>
 
+#if (defined(__GXX_EXPERIMENTAL_CXX0X) || (__cplusplus >= 201103L))
+#include <cstdint>
+#else
+#include <stdint.h>
+#endif
+
 /** @mainpage CCSDS SpacePacket Library
  * @section intro Introduction
  * CCSDS SpacePacket Library is a header-only C++ class library

@@ -8,6 +8,11 @@
 #ifndef CCSDSSPACEPACKETEXCEPTION_HH_
 #define CCSDSSPACEPACKETEXCEPTION_HH_
 
+#if (defined(__GXX_EXPERIMENTAL_CXX0X) || (__cplusplus >= 201103L))
+#include <cstdint>
+#else
+#include <stdint.h>
+#endif
 
 /** An exception class used by the CCSDSSpacePacket class.
  */
