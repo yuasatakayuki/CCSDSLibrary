@@ -159,7 +159,7 @@ public:
 
 public:
 	/** Returns APDI as an integer. */
-	inline size_t getAPIDAsInteger() const {
+	inline uint16_t getAPIDAsInteger() const {
 		return apid.to_ulong();
 	}
 
