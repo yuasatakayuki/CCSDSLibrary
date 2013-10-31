@@ -195,7 +195,7 @@ public:
 	 * @returns length of the Secondary Header part.
 	 */
 	size_t getLength() {
-		if (secondaryHeaderType == CCSDSSpacePacketSecondaryHeaderType::ADUChannelIsNotUsed) {
+		if (secondaryHeaderType.to_ulong() == CCSDSSpacePacketSecondaryHeaderType::ADUChannelIsNotUsed) {
 			return SecondaryHeaderLengthWithoutADUChannel;
 		} else {
 			return SecondaryHeaderLengthWithADUChannel;
