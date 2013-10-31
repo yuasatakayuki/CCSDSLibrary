@@ -13,17 +13,27 @@ https://github.com/yuasatakayuki/CCSDSLibrary
 
 
 ==Install==
-Download the archive or checkout the git repository, and place the "CCSDSLibrary"
-folder anywhere you want. The library consists of header files, and therefore,
-no build procedure is required.
+Clone from the github repository,
+	git clone https://github.com/yuasatakayuki/CCSDSLibrary.git
+
+Install header files by doing like the following:
+	cd CCSDSLibrary
+	mkdir build
+	cd build
+	cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
+	make install
+
+This will install all header files to /usr/local/include/CCSDSLibrary. If you want to install to, e.g., $HOME/include, do
+	cmake -DCMAKE_INSTALL_PREFIX=$HOME ..
+instead.
 
 When using this library from your application, please add
-#include "CCSDS.hh"
-and, add the path of the "CCSDSLibrary/includes" to the include path of
+#include "CCSDSLibrary/CCSDS.hh"
+and, add the path of the "CCSDSLibrary" to the include path of
 your compiler. For example, if you installed the library to
-/usr/local/CCSDSLibrary, and the g++ compiler is used, do like below when
+/usr/local/include/CCSDSLibrary, and the g++ compiler is used, do like below when
 compiling:
-g++ -I/usr/local/CCSDSLibrary/includes your_application.cc
+g++ -I/usr/local/include your_application.cc
 
 
 ==Documentation==
@@ -37,3 +47,4 @@ generate an API reference in HTML and RTF.
 ==History==
 20110612 first version (Takayuki Yuasa)
 20130101 Doxygen comments were added (Takayuki Yuasa)
+20131031 CMakeLists.txt was added (Takayuki Yuasa)
