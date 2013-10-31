@@ -141,7 +141,7 @@ public:
 		 */
 		sequenceFlag = bitset<2>((data[2] & 0xc0) >> 6 /* 1100 0000 */);
 		bitset<6> sequenceCount_msb6bits(data[2] & 0x3F/* 0011 1111 */);
-		bitset<6> sequenceCount_lsb8bits(data[3]);
+		bitset<8> sequenceCount_lsb8bits(data[3]);
 		for (size_t i = 0; i < 6; i++) {
 			sequenceCount.set(i + 8, sequenceCount_msb6bits[i]);
 		}
