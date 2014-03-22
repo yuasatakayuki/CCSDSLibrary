@@ -158,9 +158,21 @@ public:
 	}
 
 public:
-	/** Returns APDI as an integer. */
+	/** Returns APID as an integer. */
 	inline uint16_t getAPIDAsInteger() const {
 		return apid.to_ulong();
+	}
+
+public:
+	/** Returns APID as an integer. */
+	inline uint16_t getAPIDAsInteger() const {
+		return apid.to_ulong();
+	}
+
+public:
+	/** Returns lower-8bit APID as an integer. */
+	inline uint8_t getLowerAPIDAsInteger() const {
+		return apid.to_ulong() % 0xFF;
 	}
 
 public:
@@ -169,6 +181,14 @@ public:
 	 */
 	inline size_t getPacketDataLength() const {
 		return packetDataLength.to_ulong();
+	}
+
+public:
+	/** Returns the total packet length (Primary Header + Secondary Header + User Data Field).
+	 * @returns the total packet length (Primary Header + Secondary Header + User Data Field).
+	 */
+	inline size_t getTotalPacketLength() const {
+		return (this->PrimaryHeaderLength + packetDataLength.to_ulong() + 1);
 	}
 
 public:
