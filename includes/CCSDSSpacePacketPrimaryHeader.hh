@@ -164,14 +164,14 @@ public:
 	}
 
 public:
-	/** Returns APID as an integer. */
-	inline uint16_t getAPIDAsInteger() const {
-		return apid.to_ulong();
+	/** Returns lower-8bit APID as an integer. */
+	inline uint8_t getLowerAPIDAsInteger() const {
+		return apid.to_ulong() % 0xFF;
 	}
 
 public:
 	/** Returns lower-8bit APID as an integer. */
-	inline uint8_t getLowerAPIDAsInteger() const {
+	inline uint8_t getLowerAPID() const {
 		return apid.to_ulong() % 0xFF;
 	}
 
