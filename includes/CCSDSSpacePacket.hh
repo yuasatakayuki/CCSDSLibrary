@@ -217,6 +217,32 @@ public:
 	}
 
 public:
+	/** Copy constructor.
+	 */
+	CCSDSSpacePacket(const CCSDSSpacePacket& obj) {
+		using namespace std;
+		this->primaryHeader = new CCSDSSpacePacketPrimaryHeader();
+		this->secondaryHeader = new CCSDSSpacePacketSecondaryHeader();
+		this->userDataField = new std::vector<uint8_t>();
+
+		*this->primaryHeader = *(obj.primaryHeader);
+		*this->secondaryHeader = *(obj.secondaryHeader);
+		*this->userDataField = *(obj.userDataField);
+	}
+
+public:
+	/** Constructs and returns a new instance that has the same information as the current instance.
+	 * @return a pointer of the newly created instance
+	 */
+	CCSDSSpacePacket* clone(){
+		CCSDSSpacePacket* result=new CCSDSSpacePacket;
+		*(result->primaryHeader) = *(this->primaryHeader);
+		*(result->secondaryHeader) = *(this->secondaryHeader);
+		*(result->userDataField) = *(this->userDataField);
+		return result;
+}
+
+public:
 	/** Returns packet content as a vector of uint8_t.
 	 * Packet content will be dynamically generated every time
 	 * when this method is invoked.
