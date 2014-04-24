@@ -164,6 +164,18 @@ public:
 	}
 
 public:
+	/** Returns upper-3bit APID as an integer. */
+	inline uint8_t getUpperAPIDAsInteger() const {
+		return (apid.to_ulong() % 0x700) >> 8;
+	}
+
+public:
+	/** Returns upper-3bit APID as an integer. */
+	inline uint8_t getUpperAPID() const {
+		return (apid.to_ulong() % 0x700) >> 8;
+	}
+
+public:
 	/** Returns lower-8bit APID as an integer. */
 	inline uint8_t getLowerAPIDAsInteger() const {
 		return apid.to_ulong() % 0x100;
