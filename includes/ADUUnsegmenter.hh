@@ -72,10 +72,6 @@ public:
 
 public:
 	std::string message;
-
-public:
-	static const char* NoCompleteADU = "NoCompleteADU";
-	static const char* APIDMismatch = "APIDMismatch";
 };
 
 /** A class that represents a collection of pending ADU segments (of a certain ADU Channel ID).
@@ -84,7 +80,7 @@ class ADUSegments {
 public:
 	enum {
 		ErrorSegment = -2, EmptySegment = -1
-	}
+	};
 
 public:
 	uint16_t aduChannelID;
@@ -286,7 +282,7 @@ public:
 		uint16_t lowerAPID = primaryHeader->getAPIDAsInteger() & 0xff;
 		if (lowerAPID != this->lowerAPID) {
 			delete packet;
-			ADUUnsegmenterException e(ADUUnsegmenterException::APIDMismatch);
+			ADUUnsegmenterException e("APIDMismatch");
 			throw e;
 		}
 
@@ -330,7 +326,7 @@ public:
 		uint16_t lowerAPID = primaryHeader->getAPIDAsInteger() & 0xff;
 		if (lowerAPID != this->lowerAPID) {
 			delete packet;
-			ADUUnsegmenterException e(ADUUnsegmenterException::APIDMismatch);
+			ADUUnsegmenterException e("APIDMismatch");
 			throw e;
 		}
 
@@ -373,7 +369,7 @@ public:
 			completedADUs.pop();
 			return product;
 		} else {
-			throw ADUUnsegmenterException(ADUUnsegmenterException::NoCompleteADU);
+			throw ADUUnsegmenterException("NoCompleteADU");
 		}
 	}
 
