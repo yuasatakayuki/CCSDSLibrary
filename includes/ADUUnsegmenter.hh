@@ -29,6 +29,7 @@ public:
 	uint16_t ADUChannelID = 0x00;
 	uint8_t ADUCount = 0x00;
 	uint32_t TI = 0x00000000;
+	uint8_t category = 0x00;
 
 public:
 	std::vector<uint8_t> data;
@@ -137,6 +138,7 @@ public:
 			throw ADUSegmentsException();
 		}
 		ADU* adu = new ADU;
+		adu->category = pendingPackets[0]->getSecondaryHeader()->getCategory().to_ulong();
 		adu->ADUChannelID = this->aduChannelID;
 		adu->packettype = pendingPackets[0]->getPrimaryHeader()->getPacketType().to_ulong();
 		adu->upperAPID = pendingPackets[0]->getPrimaryHeader()->getAPIDAsInteger() >> 8;
