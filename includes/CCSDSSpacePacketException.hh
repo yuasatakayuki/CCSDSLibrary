@@ -50,5 +50,26 @@ public:
 		this->status = status;
 	}
 
+public:
+	/** Returns string value.
+	 */
+	std::string toString() {
+		std::string result;
+		switch (status) {
+		case NotACCSDSSpacePacket:
+			result = "NotACCSDSSpacePacket";
+			break;
+		case SecondaryHeaderTooShort:
+			result = "SecondaryHeaderTooShort";
+			break;
+		case InconsistentPacketLength:
+			result = "InconsistentPacketLength";
+			break;
+		default:
+			result = "Undefined status";
+			break;
+		}
+		return result;
+	}
 };
 #endif /* CCSDSSPACEPACKETEXCEPTION_HH_ */
