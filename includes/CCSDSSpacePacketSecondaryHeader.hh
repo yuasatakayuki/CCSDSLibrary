@@ -114,7 +114,7 @@ public:
 		time[2] = *(data + 2);
 		time[3] = *(data + 3);
 		secondaryHeaderType = bitset<1>((data[4] & 0x80) >> 7 /* 1000 0000 */);
-		category = bitset<7>(data[4] & 0x3F/* 0111 1111 */);
+		category = bitset<7>(data[4] & 0x7F/* 0111 1111 */);
 		aduCount = data[5];
 		bitset<8> aduSegmentCount_lsb8bits;
 		bitset<6> aduSegmentCount_msb6bits;
