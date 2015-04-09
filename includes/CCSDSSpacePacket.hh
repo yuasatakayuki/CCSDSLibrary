@@ -361,6 +361,7 @@ public:
 	 * @returns string dump of this packet.
 	 */
 	virtual std::string toString() {
+		const size_t maxBytesToBeDumped = 32;
 		std::stringstream ss;
 		using std::endl;
 		ss << "---------------------------------" << endl;
@@ -379,7 +380,7 @@ public:
 			} else {
 				ss << " bytes" << endl;
 			}
-			ss << arrayToString(userDataField, "hex") << endl;
+			ss << arrayToString(userDataField, "hex", maxBytesToBeDumped) << endl;
 		} else {
 			ss << "No user data field" << endl;
 		}
@@ -496,6 +497,20 @@ public:
 	 */
 	inline std::vector<uint8_t>* getUserDataField() {
 		return userDataField;
+	}
+
+public:
+	/** True if TC Packet.
+	 */
+	bool isTCPacket(){
+		return (primaryHeader->getPacketType().to_ulong()==1)?true:false;
+	}
+
+public:
+	/** True if TM Packet.
+	 */
+	bool isTMPacket(){
+		return (primaryHeader->getPacketType().to_ulong()==0)?true:false;
 	}
 
 public:
