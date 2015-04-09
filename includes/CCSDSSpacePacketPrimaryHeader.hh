@@ -205,8 +205,8 @@ public:
 
 public:
 	/** Returns Packet Type.
-	 * @retval 0 Command packet.
-	 * @retval 1 Telemetry Packet.
+	 * @retval 0 Telemetry Packet.
+	 * @retval 1 Command packet.
 	 */
 	inline std::bitset<1> getPacketType() const {
 		return packetType;
