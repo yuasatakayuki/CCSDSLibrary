@@ -349,15 +349,20 @@ public:
 		ss << "SecondaryHeader (" << dec << this->getLength() << " bytes)" << endl;
 		ss << "Time                : " << time_integer << " (0x" << hex << right << setw(8) << setfill('0')
 				<< (uint32_t) time_integer << ")" << dec << endl;
-		ss << "SecondaryHeaderType : " << secondaryHeaderType.to_string() << endl;
-		ss << "Category            : " << category.to_string() << endl;
-		ss << "ADUCount            : " << dec << (uint32_t) aduCount << " (0x" << hex << right << setw(2)
-				<< setfill('0') << (uint32_t) aduCount << ")" << dec << endl;
+		ss << "SecondaryHeaderType : " << secondaryHeaderType.to_string()
+				<< ((secondaryHeaderType.to_ulong() == 1) ? "(SecondaryHeader present)" : "(SecondaryHeader not present)")
+				<< endl;
+		ss << "Category            : " << "0x" << hex << right << setw(2) << setfill('0') << (uint32_t) category.to_ulong()
+				<< endl;
+		ss << "ADUCount            : " << dec << (uint32_t) aduCount << " (0x" << hex << right << setw(2) << setfill('0')
+				<< (uint32_t) aduCount << ")" << dec << endl;
 
 		if (isADUChannelUsed()) {
-			ss << "ADUChannelID        : " << (uint32_t) aduChannelID << endl;
-			ss << "ADUSegmentFlag      : " << dec << aduSegmentFlag.to_string() << endl;
-			ss << "ADUSegmentCount     : " << dec << aduSegmentCount.to_ulong() << "(0x" << hex << right << setw(4)
+			ss << "ADUChannelID        : " << (uint32_t) aduChannelID << " (0x" << hex << right << setw(2) << setfill('0')
+					<< (uint32_t) aduChannelID << ")" << endl;
+			ss << "ADUSegmentFlag      : " << dec << aduSegmentFlag.to_string() << " (" << this->getADUSegmentFlagAsString()
+					<< ")" << endl;
+			ss << "ADUSegmentCount     : " << dec << aduSegmentCount.to_ulong() << " (0x" << hex << right << setw(4)
 					<< setfill('0') << aduSegmentCount.to_ulong() << ")" << hex << endl;
 		}
 		return ss.str();
@@ -366,29 +371,44 @@ public:
 public:
 	/** True if this instance is a continuation ADU segment.
 	 */
-	bool isADUContinuationSegment(){
-		return aduSegmentFlag.to_ulong()==CCSDSSpacePacketADUSegmentFlag::ContinuationSegument;
+	bool isADUContinuationSegment() {
+		return aduSegmentFlag.to_ulong() == CCSDSSpacePacketADUSegmentFlag::ContinuationSegument;
 	}
 
 public:
 	/** True if this instance is the first ADU segment.
 	 */
-	bool isADUFirstSegment(){
-		return aduSegmentFlag.to_ulong()==CCSDSSpacePacketADUSegmentFlag::TheFirstSegment;
+	bool isADUFirstSegment() {
+		return aduSegmentFlag.to_ulong() == CCSDSSpacePacketADUSegmentFlag::TheFirstSegment;
 	}
 
 public:
 	/** True if this instance is the last ADU segment.
 	 */
-	bool isADULastSegment(){
-		return aduSegmentFlag.to_ulong()==CCSDSSpacePacketADUSegmentFlag::TheLastSegment;
+	bool isADULastSegment() {
+		return aduSegmentFlag.to_ulong() == CCSDSSpacePacketADUSegmentFlag::TheLastSegment;
 	}
 
 public:
 	/** True if this instance is an unsegmented ADU.
 	 */
-	bool isADUUnsegmented(){
-		return aduSegmentFlag.to_ulong()==CCSDSSpacePacketADUSegmentFlag::UnsegmentedADU;
+	bool isADUUnsegmented() {
+		return aduSegmentFlag.to_ulong() == CCSDSSpacePacketADUSegmentFlag::UnsegmentedADU;
+	}
+
+public:
+	std::string getADUSegmentFlagAsString() {
+		if (this->isADUContinuationSegment()) {
+			return "ContinuationSegment";
+		} else if (this->isADUFirstSegment()) {
+			return "FirstSegment";
+		} else if (this->isADULastSegment()) {
+			return "LastSegment";
+		} else if (this->isADUUnsegmented()) {
+			return "Unsegmented";
+		} else {
+			return "Invalid ADUSegmentFlag";
+		}
 	}
 
 };
