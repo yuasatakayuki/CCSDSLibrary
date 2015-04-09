@@ -165,6 +165,11 @@ public:
 
 public:
 	void push(CCSDSSpacePacket* packet) {
+		if (packet->isTCPacket()) {
+			using namespace std;
+			cerr << "ADUUnsegmenter::push(): Warining. TC Packet was pushed." << endl;
+			return;
+		}
 		CCSDSSpacePacketSecondaryHeader* secondaryHeader = packet->getSecondaryHeader();
 		if (complete) {
 			throw ADUSegmentsException();
@@ -177,12 +182,18 @@ public:
 		ss << (int) secondaryHeader->getADUChannelID() << " " << secondaryHeader->getADUSegmentFlag().to_ulong() << " "
 				<< currentSegmentCount << " " << newSegmentCount;
 		if (watchADUSegmentCount) {
-			if (currentSegmentFlag != EmptySegment) {
+			if (currentSegmentFlag != EmptySegment
+					&& secondaryHeader->getADUSegmentFlag().to_ulong() != 0x01 /* not First Segment */) {
 				if (newSegmentCount != currentSegmentCount + 1 //i.e. newSegmentCount is different from currentSegmentCount by more than 1
 				&& ((size_t) newSegmentCount + NMaximumADUSegmentCount) != ((size_t) currentSegmentCount + 1) //
 						) {
+					using namespace std;
 					std::stringstream ss;
-					ss << "!!!!!!!adu segment count jumped: " << currentSegmentCount << "-->" << newSegmentCount;
+					ss << "ADUSegments::push(): ADU Segment Count jumped: " << dec << currentSegmentCount << "-->" << newSegmentCount
+							<< " for ADU Channel ID " << "0x" << hex << right << setw(2) << setfill('0')
+							<< (uint32_t) secondaryHeader->getADUChannelID() << endl;
+					ss << "ADUSegments::push(): ADU Segment Counter for ADU Channel ID " << hex << right << setw(2)
+							<< setfill('0') << (uint32_t) secondaryHeader->getADUChannelID() << " will be reset to 0." << endl;
 					error_process(ss.str());
 				}
 			}
@@ -240,12 +251,24 @@ public:
 			error_process("hatena");
 		}
 	}
+
+public:
+	/** Returns a vector containing pointers to pending CCSDS SpacePackets.
+	 */
+	std::vector<CCSDSSpacePacket*> getPendingPacketVector() {
+		return pendingPackets;
+	}
+
+public:
+	/** Returns the number of pending CCSDS SpacePackets.
+	 */
+	size_t getPendingPacketSize() {
+		return pendingPackets.size();
+	}
+
 };
 
 /** A class that restores a complete ADU from ADU segments split into multiple CCSDS SpacePackets.
- * Typical usage: <br/>
- * <ol>
- * <li> Instantiate ADUUnsegmenter
  * This class was taken from HXI/SGD DataReceiver by Soki Sakurai and Hirokazu Odaka.
  */
 class ADUUnsegmenter {
@@ -266,19 +289,40 @@ public:
 	}
 
 public:
-	/** Puses a CCSDS SpacePacket to the unsegmenter.
-	 * Pused packet will be analyzed, and then connected to
+	std::string toString() {
+		using namespace std;
+		std::stringstream ss;
+
+		ss << "ADUUnsegmenter(lowerAPID=0x" << hex << right << setw(4) << setfill('0') << (uint32_t) this->lowerAPID << ")"
+				<< endl;
+		ss << "  Number of complete ADU: " << dec << completedADUs.size() << endl;
+		ss << "  ADUUnsegmentMap" << endl;
+		for (auto it = aduSegmentMap.begin(); it != aduSegmentMap.end(); it++) {
+			ss << "    aduChannelID=0x" << hex << right << setw(2) << setfill('0') << (uint32_t) it->first
+					<< "   # of pending packets=" << dec << it->second->getPendingPacketSize() << endl;
+		}
+		return ss.str();
+	}
+
+public:
+	/** Pushes a CCSDS SpacePacket (TM Packet) to the unsegmenter.
+	 * Pushed packet will be analyzed, and then connected to
 	 * a pending packet list if it is a middle segment.
 	 * If the segment is the last segment of a complete ADU,
 	 * ADUUnsegmenter will join segments in the pending list,
-	 * and puses a unsegmented complete ADU to an internal
+	 * and pushes a unsegmented complete ADU to an internal
 	 * buffer so that user application can retrieve the complete
 	 * ADU via the popCompleteADU() method.
 	 * @param[in] ccsdsSpacePacketByteArray a CCSDS SpacePacket that contains an ADU segment
 	 */
-	void push(const std::vector<uint8_t>& ccsdsSpacePacketByteArray) throw (ADUUnsegmenterException) {
+	void push(const std::vector<uint8_t>& ccsdsSpacePacketByteArray) throw (ADUUnsegmenterException,
+			CCSDSSpacePacketException) {
 		CCSDSSpacePacket* packet = new CCSDSSpacePacket;
 		packet->interpret(&ccsdsSpacePacketByteArray[0], ccsdsSpacePacketByteArray.size());
+		if (packet->isTCPacket()) {
+			delete packet;
+			return;
+		}
 		CCSDSSpacePacketPrimaryHeader* primaryHeader = packet->getPrimaryHeader();
 		CCSDSSpacePacketSecondaryHeader* secondaryHeader = packet->getSecondaryHeader();
 		uint16_t lowerAPID = primaryHeader->getAPIDAsInteger() & 0xff;
@@ -291,13 +335,12 @@ public:
 		uint16_t aduChannelID = secondaryHeader->getADUChannelID();
 		if (aduSegmentMap.find(aduChannelID) == aduSegmentMap.end()) {
 			aduSegmentMap[aduChannelID] = new ADUSegments(aduChannelID);
-			aduSegmentMap[aduChannelID]->watchADUSegmentCount = false;
+			aduSegmentMap[aduChannelID]->watchADUSegmentCount = true;
 		}
 		ADUSegments* segments = aduSegmentMap[aduChannelID];
 		try {
 			segments->push(packet);
 		} catch (ADUSegmentsException& e) {
-			std::cerr << e.toString() << std::endl;
 			throw ADUUnsegmenterException(e.toString());
 		}
 
@@ -308,12 +351,12 @@ public:
 	}
 
 public:
-	/** Puses a CCSDS SpacePacket to the unsegmenter.
-	 * Pused packet will be analyzed, and then connected to
+	/** Pushes a CCSDS SpacePacket to the unsegmenter.
+	 * Pushed packet will be analyzed, and then connected to
 	 * a pending packet list if it is a middle segment.
 	 * If the segment is the last segment of a complete ADU,
 	 * ADUUnsegmenter will join segments in the pending list,
-	 * and puses a unsegmented complete ADU to an internal
+	 * and pushes a unsegmented complete ADU to an internal
 	 * buffer so that user application can retrieve the complete
 	 * ADU via the popCompleteADU() method.
 	 * Note: This method makes a copy of the input CCSDSSpacePacket instance,
@@ -322,6 +365,9 @@ public:
 	 * @param[in] ccsdsSpacePacketByteArray a CCSDS SpacePacket that contains an ADU segment
 	 */
 	void push(CCSDSSpacePacket* ccsdsSpacePacket) throw (ADUUnsegmenterException) {
+		if (ccsdsSpacePacket->isTCPacket()) {
+			return;
+		}
 		CCSDSSpacePacket* packet = ccsdsSpacePacket->clone(); //copy the instance
 		CCSDSSpacePacketPrimaryHeader* primaryHeader = packet->getPrimaryHeader();
 		CCSDSSpacePacketSecondaryHeader* secondaryHeader = packet->getSecondaryHeader();
@@ -335,13 +381,12 @@ public:
 		uint16_t aduChannelID = secondaryHeader->getADUChannelID();
 		if (aduSegmentMap.find(aduChannelID) == aduSegmentMap.end()) {
 			aduSegmentMap[aduChannelID] = new ADUSegments(aduChannelID);
-			aduSegmentMap[aduChannelID]->watchADUSegmentCount = false;
+			aduSegmentMap[aduChannelID]->watchADUSegmentCount = true;
 		}
 		ADUSegments* segments = aduSegmentMap[aduChannelID];
 		try {
 			segments->push(packet);
 		} catch (ADUSegmentsException& e) {
-			std::cerr << e.toString() << std::endl;
 			throw ADUUnsegmenterException(e.toString());
 		}
 
