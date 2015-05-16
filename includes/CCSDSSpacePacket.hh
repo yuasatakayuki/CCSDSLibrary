@@ -415,18 +415,18 @@ public:
 	/** A utility method which converts std::vector<uint8_t> to
 	 * std::string.
 	 */
-	static std::string arrayToString(std::vector<uint8_t> *data, std::string mode = "dec", int maxBytesToBeDumped = 8) {
+	static std::string arrayToString(std::vector<uint8_t> *data, std::string mode = "dec", size_t maxBytesToBeDumped = 8) {
 		//copied from CxxUtilities::Array
 		using namespace std;
 
 		stringstream ss;
-		int maxSize;
+		size_t maxSize;
 		if (data->size() < maxBytesToBeDumped) {
 			maxSize = data->size();
 		} else {
 			maxSize = maxBytesToBeDumped;
 		}
-		for (int i = 0; i < maxSize; i++) {
+		for (size_t i = 0; i < maxSize; i++) {
 			if (mode == "dec") {
 				ss << dec << left << (uint32_t) (data->at(i));
 			} else if (mode == "hex") {
