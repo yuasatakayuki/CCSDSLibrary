@@ -177,6 +177,20 @@ public:
 			throw ADUSegmentsException();
 		}
 
+		if (pendingPackets.size() != 0) {
+		  if (secondaryHeader->getADUCount() !=	pendingPackets[0]->getSecondaryHeader()->getADUCount()) {
+		    using namespace std;
+		    std::stringstream ss;
+		    ss << "ADUSegments::push(): Different ADU Count: "
+		       << dec << (int) secondaryHeader->getADUCount() << "<-->" << (int) pendingPackets[0]->getSecondaryHeader()->getADUCount()
+		       << " for ADU Channel ID " << "0x" << hex << right << setw(2) << setfill('0')
+		       << (uint32_t) secondaryHeader->getADUChannelID() << endl;
+		    ss << "ADUSegments::push(): ADU Segment Counter for ADU Channel ID " << hex << right << setw(2)
+		       << setfill('0') << (uint32_t) secondaryHeader->getADUChannelID() << " will be reset to 0." << endl;
+		    error_process(ss.str());
+		  }
+		}
+
 		uint16_t newSegmentCount = secondaryHeader->getADUSegmentCount().to_ulong();
 		std::stringstream ss;
 		ss << (int) secondaryHeader->getADUChannelID() << " " << secondaryHeader->getADUSegmentFlag().to_ulong() << " "
